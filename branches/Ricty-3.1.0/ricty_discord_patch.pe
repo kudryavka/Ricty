@@ -1,0 +1,162 @@
+#!/usr/bin/env fontforge -script
+
+########################################
+# Ricty Discord Patch for Ricty 3.1.0
+#
+# Last modified: ricty_discord_patch.pe on Sun, 19 Jun 2011.
+#
+# Author: Yasunori Yusa <lastname at save dot sys.t.u-tokyo.ac.jp>
+#
+# This script is for generating ``Ricty Discord'' from Ricty. Owing to SIL
+# Open Font License Version 1.1 section 5, it is PROHIBITED to distribute
+# the generated font.
+#
+# How to use:
+# % fontforge -script ricty_discord_patch.pe Ricty-Regular.ttf
+# % fontforge -script ricty_discord_patch.pe Ricty-Bold.ttf
+########################################
+
+# check args
+if ($argc == 1)
+    Print("Usage: ricty_discord_patch.pe fontfamily-fontstyle.ttf")
+    Quit()
+endif
+
+# begin loop in args
+i = 1
+while (i < $argc)
+
+########################################
+# set vars
+########################################
+
+# get args
+input_ttf  = $argv[i]
+input      = input_ttf:t:r
+if (input_ttf:t:e != "ttf")
+    Print("Usage: ricty_discord_patch.pe fontfamily-fontstyle.ttf")
+    Quit()
+endif
+
+# get font names
+hyphen_idx = Strrstr(input, '-')
+if (hyphen_idx == -1)
+    Print("Usage: ricty_discord_patch.pe fontfamily-fontstyle.ttf")
+    Quit()
+endif
+inputfamily  = Strsub(input, 0, hyphen_idx)
+inputstyle   = Strsub(input, hyphen_idx+1)
+suffixfamily = "Discord"
+
+########################################
+# open and set configs
+########################################
+
+# open
+Open(input_ttf)
+
+# set encoding to Unicode-bmp
+Reencode("unicode")
+
+# set configs
+SetFontNames(inputfamily + suffixfamily + "-" + inputstyle, \
+             $familyname + " " + suffixfamily, \
+             $familyname + " " + suffixfamily + " " + inputstyle, \
+             inputstyle)
+
+########################################
+# edit some glyphs
+########################################
+
+# " -> magnified
+Select(0u0022);  Scale(115, 115, 250, 600); SetWidth(500)
+RemoveOverlap(); RoundToInt()
+
+# ' -> magnified
+Select(0u0027);  Scale(115, 115, 250, 600); SetWidth(500)
+RemoveOverlap(); RoundToInt()
+
+# , -> magnified
+Select(0u002c);  Scale(115, 115, 250, 0); SetWidth(500)
+RemoveOverlap(); RoundToInt()
+
+# . -> magnified
+Select(0u002e);  Scale(115, 115, 250, 0); SetWidth(500)
+RemoveOverlap(); RoundToInt()
+
+# 0 -> dotted 0
+Select(0u00b7);  Copy() # middle dot
+Select(0u0030);  Paste(); CenterInWidth()
+Select(65610);   Copy() # zero (Inconsolata's unused glyph)
+Select(0u0030);  PasteInto()
+RemoveOverlap(); RoundToInt()
+
+# 7 -> 7 with cross-bar
+Select(0u00af); Copy() # macron
+Select(0u0037); PasteWithOffset(20, -263); RemoveOverlap()
+
+# : -> magnified
+Select(0u003a);  Scale(115, 115, 250, 0); SetWidth(500)
+RemoveOverlap(); RoundToInt()
+
+# ; -> magnified
+Select(0u003b);  Scale(115, 115, 250, 0); SetWidth(500)
+RemoveOverlap(); RoundToInt()
+
+# D -> eth
+Select(0u0110); Copy()
+Select(0u0044); Paste()
+
+# Z -> Z with cross-bar
+Select(0u00af); Copy()  # macron
+Select(65611);  Paste() # tmp glyph
+Transform(100, -65, 0, 100, 0, -12000); SetWidth(500)
+Copy()
+Select(0u005a);  PasteInto()
+RemoveOverlap(); RoundToInt()
+Select(65611);   Clear() # tmp glyph
+
+# ^ -> magnified
+Select(0u005e);  Scale(115, 115, 250, 600); SetWidth(500)
+RemoveOverlap(); RoundToInt()
+
+# ` -> magnified
+Select(0u0060);  Scale(115, 115, 250, 600); SetWidth(500)
+RemoveOverlap(); RoundToInt()
+
+# l -> cut off left-bottom serif
+Select(0u006c); Copy()
+Rotate(180); Move(1, 0); SetWidth(500)
+PasteInto(); OverlapIntersect()
+
+# r -> r of serif (Inconsolata's unused glyph)
+Select(65608);  Copy()
+Select(0u0072); Paste()
+
+# z -> z with cross-bar
+Select(0u00af); Copy()  # macron
+Select(65611);  Paste() # tmp glyph
+Transform(75, -52, 0, 100, 5500, -23500); SetWidth(500)
+Copy()
+Select(0u007a);  PasteInto()
+RemoveOverlap(); RoundToInt()
+Select(65611);   Clear() # tmp glyph
+
+# | -> broken bar (Inconsolata's glyph)
+Select(0u00a6); Copy()
+Select(0u007c); Paste()
+
+# ~ -> moved upward
+Select(0u007e); Move(0, 120)
+
+########################################
+# generate
+########################################
+
+Generate(inputfamily + suffixfamily + "-" + inputstyle + ".ttf", "", 0x84)
+Print("Generated " + inputfamily + suffixfamily + "-" + inputstyle + ".ttf")
+Close()
+
+# end loop
+i += 1; endloop
+Quit()
