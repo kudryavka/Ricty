@@ -20,7 +20,7 @@
 # # Cocoa Emacs configuration sample
 # (set-face-attribute 'default nil
 #                     :family "Ricty Discord Ascii"
-#                     :height 135)
+#                     :height 140)
 # (set-fontset-font (frame-parameter nil 'font)
 #                   'japanese-jisx0208
 #                   '("Ricty Discord" . "iso10646-1"))
