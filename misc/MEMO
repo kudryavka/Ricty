@@ -1,0 +1,9 @@
+MEMO
+
+* ricty_generator.sh の ricty_ascent/ricty_descent の数字を大きくすると、生成フォントの行間が広くなる。
+
+* ricty_generator.sh に Migu 1M 以外の日本語フォントを食べさせても大抵はうまく合成される。ボールド体がない日本語フォントでも、ダミーを食べさせて Ricty-Bold.ttf を捨てればいい。
+
+* ricty_discord_patch.pe は適当にコメントアウトして使うことを想定している。
+
+* Cocoa Emacs でフレーム幅が倍になる問題は、ricty_ascii_extractor.pe で何とかなる。
