@@ -3,7 +3,7 @@
 ########################################
 # Ricty Generator 3.1.1b
 #
-# Last modified: ricty_generator.sh on Wed, 22 Jun 2011.
+# Last modified: ricty_generator.sh on Sat, 25 Jun 2011.
 #
 # Author: Yasunori Yusa <lastname at save dot sys.t.u-tokyo.ac.jp>
 #
@@ -63,7 +63,7 @@ ricty_generator="ricty_generator.pe"
 cat << _EOT_
 Ricty Generator ${ricty_version}
 
-Copyright (c) 2011 Yasunori Yusa
+Author: Yasunori Yusa <lastname at save dot sys.t.u-tokyo.ac.jp>
 
 This script is for generating \`\`Ricty'' font from Inconsolata and Migu 1M.
 It requires 2-5 minutes to generate Ricty. Owing to SIL Open Font License
@@ -160,6 +160,8 @@ trap "if [ -d $tmpdir ]; then echo 'Remove temporary files'; rm -rf $tmpdir; ech
 ########################################
 
 cat > ${tmpdir}/${modified_inconsolata_generator} << _EOT_
+#!/usr/local/bin/fontforge -script
+
 # print
 Print("Generate modified Inconsolata")
 
@@ -226,6 +228,8 @@ _EOT_
 ########################################
 
 cat > ${tmpdir}/${modified_migu1m_generator} << _EOT_
+#!/usr/local/bin/fontforge -script
+
 # print
 Print("Generate modified Migu 1M")
 
@@ -259,6 +263,8 @@ _EOT_
 ########################################
 
 cat > ${tmpdir}/${ricty_generator} << _EOT_
+#!/usr/local/bin/fontforge -script
+
 # print
 Print("Generate Ricty")
 

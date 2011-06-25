@@ -1,9 +1,9 @@
-#!/usr/bin/env fontforge -script
+#!/usr/local/bin/fontforge -script
 
 ########################################
 # Ricty ASCII Extractor
 #
-# Last modified: ricty_ascii_extractor.pe on Wed, 22 Jun 2011.
+# Last modified: ricty_ascii_extractor.pe on Sat, 25 Jun 2011.
 #
 # Author: Yasunori Yusa <lastname at save dot sys.t.u-tokyo.ac.jp>
 #
