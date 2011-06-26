@@ -45,6 +45,7 @@ ricty_descent="215"
 
 # set fonts directories used in auto flag
 fonts_dirs=". ${HOME}/.fonts /usr/local/share/fonts /usr/share/fonts"
+fonts_dirs+=" ${HOME}/Library/Fonts /Library/Fonts"
 
 # set filenames
 modified_inconsolata_generator="modified_inconsolata_generator.pe"
