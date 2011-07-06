@@ -1,9 +1,9 @@
 #!/usr/local/bin/fontforge -script
 
 ########################################
-# Ricty Discord Patch for Ricty 3.1.1b
+# Ricty Discord Patch for Ricty 3.2.0b
 #
-# Last modified: ricty_discord_patch.pe on Sat, 25 Jun 2011.
+# Last modified: ricty_discord_patch.pe on Wed, 06 Jul 2011.
 #
 # Author: Yasunori Yusa <lastname at save dot sys.t.u-tokyo.ac.jp>
 #
@@ -44,9 +44,9 @@ if (hyphen_idx == -1)
     Print("Usage: ricty_discord_patch.pe fontfamily-fontstyle.ttf")
     Quit()
 endif
-inputfamily  = Strsub(input, 0, hyphen_idx)
-inputstyle   = Strsub(input, hyphen_idx+1)
-suffixfamily = "Discord"
+inputfamily = Strsub(input, 0, hyphen_idx)
+inputstyle  = Strsub(input, hyphen_idx+1)
+addfamily   = "Discord"
 
 ########################################
 # open and set configs
@@ -59,9 +59,9 @@ Open(input_ttf)
 Reencode("unicode")
 
 # set configs
-SetFontNames(inputfamily + suffixfamily + "-" + inputstyle, \
-             $familyname + " " + suffixfamily, \
-             $familyname + " " + suffixfamily + " " + inputstyle, \
+SetFontNames(inputfamily + addfamily + "-" + inputstyle, \
+             $familyname + " " + addfamily, \
+             $familyname + " " + addfamily + " " + inputstyle, \
              inputstyle)
 
 ########################################
@@ -153,8 +153,8 @@ Select(0u007e); Move(0, 120)
 # generate
 ########################################
 
-Generate(inputfamily + suffixfamily + "-" + inputstyle + ".ttf", "", 0x84)
-Print("Generated " + inputfamily + suffixfamily + "-" + inputstyle + ".ttf")
+Generate(inputfamily + addfamily + "-" + inputstyle + ".ttf", "", 0x84)
+Print("Generated " + inputfamily + addfamily + "-" + inputstyle + ".ttf")
 Close()
 
 # end loop
