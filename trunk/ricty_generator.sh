@@ -3,7 +3,7 @@
 ########################################
 # Ricty Generator 3.2.0b
 #
-# Last modified: ricty_generator.sh on Wed, 06 Jul 2011.
+# Last modified: ricty_generator.sh on Thu, 07 Jul 2011.
 #
 # Author: Yasunori Yusa <lastname at save dot sys.t.u-tokyo.ac.jp>
 #
@@ -88,48 +88,54 @@ ricty_generator_help()
     echo "Options:"
     echo "  -h                     Display this infomation"
     echo "  -f /path/to/fontforge  Set path to fontforge command"
+    echo "  -v                     Enable verbose mode (print all error/warning messages)"
     echo "  -l                     Leave (NOT remove) temporary files"
-    echo "  -n name                Set additional fontfamily name (\`\`Ricty HERE'')"
+    echo "  -n string              Set additional fontfamily name (\`\`Ricty HERE'')"
     echo "  -w                     Widen line space"
     echo "  -W                     Widen line space extremely"
-    echo "  -z                     NOT visalize zenkaku space"
+    echo "  -z                     NOT visualize zenkaku space"
     exit 0
 }
 
 # get options
-leave_tmp_flag="false"
-zenkaku_space_flag="true"
-while getopts f:ln:wWzh OPT
+verbose_mode_flag="false"
+leaving_tmp_flag="false"
+invisible_zspace_flag="false"
+while getopts hf:vln:wWz OPT
 do
     case $OPT in
+        "h" )
+            ricty_generator_help
+            ;;
         "f" )
             echo "Option: Set path to fontforge command: $OPTARG"
             fontforge_cmd="$OPTARG"
             ;;
+        "v" )
+            echo "Option: Enable verbose mode"
+            verbose_mode_flag="true"
+            ;;
         "l" )
             echo "Option: Leave (NOT remove) temporary files"
-            leave_tmp_flag="true"
+            leaving_tmp_flag="true"
             ;;
         "n" )
             echo "Option: Set additional fontfamily name: $OPTARG"
-            ricty_addfamilyname="$OPTARG"
+            ricty_addfamilyname=`echo $OPTARG | sed -e 's/ //g'`
             ;;
         "w" )
             echo "Option: Widen line space"
-            ricty_ascent=`expr $ricty_ascent + 80`
-            ricty_descent=`expr $ricty_descent + 80`
+            ricty_ascent=`expr $ricty_ascent + 128`
+            ricty_descent=`expr $ricty_descent + 32`
             ;;
         "W" )
             echo "Option: Widen line space extremely"
-            ricty_ascent=`expr $ricty_ascent + 160`
-            ricty_descent=`expr $ricty_descent + 160`
+            ricty_ascent=`expr $ricty_ascent + 256`
+            ricty_descent=`expr $ricty_descent + 64`
             ;;
         "z" )
-            echo "Option: NOT visalize zenkaku space"
-            zenkaku_space_flag="false"
-            ;;
-        "h" )
-            ricty_generator_help
+            echo "Option: NOT visualize zenkaku space"
+            invisible_zspace_flag="true"
             ;;
         *   )
             exit 1
@@ -208,7 +214,7 @@ else
 fi
 
 # make tmp
-if [ -w "/tmp" -a "$leave_tmp_flag" = "false" ]
+if [ -w "/tmp" -a "$leaving_tmp_flag" = "false" ]
 then
     tmpdir=`mktemp -d /tmp/ricty_generator_tmpdir.XXXXXX` || exit 2
 else
@@ -216,10 +222,13 @@ else
 fi
 
 # remove tmp by trapping
-if [ "$leave_tmp_flag" = "false" ]
+if [ "$leaving_tmp_flag" = "false" ]
 then
     trap "if [ -d $tmpdir ]; then echo 'Remove temporary files'; rm -rf $tmpdir; echo 'Abnormal terminated'; fi; exit 3" HUP INT QUIT
     trap "if [ -d $tmpdir ]; then echo 'Remove temporary files'; rm -rf $tmpdir; echo 'Abnormal terminated'; fi" EXIT
+else
+    trap "if [ -d $tmpdir ]; echo 'Abnormal terminated'; fi; exit 3" HUP INT QUIT
+    trap "if [ -d $tmpdir ]; echo 'Abnormal terminated'; fi" EXIT
 fi
 
 ########################################
@@ -227,7 +236,7 @@ fi
 ########################################
 
 cat > ${tmpdir}/${modified_inconsolata_generator} << _EOT_
-#!/usr/local/bin/fontforge -script
+#!$fontforge_cmd -script
 
 # print
 Print("Generate modified Inconsolata")
@@ -281,7 +290,7 @@ SelectWorthOutputting()
 ExpandStroke(30, 0, 0, 0, 1)
 Select(0u003e); Copy()           # >
 Select(0u003c); Paste(); HFlip() # <
-RemoveOverlap(); RoundToInt()
+RoundToInt(); RemoveOverlap(); RoundToInt()
 
 # save bold
 Save("${tmpdir}/${modified_inconsolata_bold}")
@@ -295,7 +304,7 @@ _EOT_
 ########################################
 
 cat > ${tmpdir}/${modified_migu1m_generator} << _EOT_
-#!/usr/local/bin/fontforge -script
+#!$fontforge_cmd -script
 
 # print
 Print("Generate modified Migu 1M")
@@ -316,7 +325,7 @@ i = 0; while (i < SizeOf(input_list))
     ClearInstrs(); UnlinkReference()
     SetWidth(-1, 1); Scale(91, 91, 0, 0); SetWidth(110, 2); SetWidth(1, 1)
     Move(23, 0); SetWidth(-23, 1)
-    RemoveOverlap(); RoundToInt()
+    RoundToInt(); RemoveOverlap(); RoundToInt()
     # save
     Save("${tmpdir}/" + output_list[i])
     Print("Generated " + output_list[i])
@@ -330,7 +339,7 @@ _EOT_
 ########################################
 
 cat > ${tmpdir}/${ricty_generator} << _EOT_
-#!/usr/local/bin/fontforge -script
+#!$fontforge_cmd -script
 
 # print
 Print("Generate Ricty")
@@ -407,7 +416,7 @@ i = 0; while (i < SizeOf(fontstyle_list))
     MergeFonts(inconsolata_list[i])
     MergeFonts(migu1m_list[i])
     # edit zenkaku space (from ballot box and heavy greek cross)
-    if ("$zenkaku_space_flag" == "true")
+    if ("$invisible_zspace_flag" == "false")
         Select(0u2610); Copy(); Select(0u3000); Paste()
         Select(0u271a); Copy(); Select(0u3000); PasteInto(); OverlapIntersect()
     endif
@@ -431,7 +440,7 @@ i = 0; while (i < SizeOf(fontstyle_list))
     OverlapIntersect()
     Copy(); Select(0u2015); Paste()
     # post proccess
-    SelectWorthOutputting(); RemoveOverlap(); RoundToInt()
+    SelectWorthOutputting(); RoundToInt(); RemoveOverlap(); RoundToInt()
     # generate
     if (addfontfamily != "")
         Generate(fontfamily + addfontfamily + "-" + fontstyle_list[i] + ".ttf", "", 0x84)
@@ -449,20 +458,26 @@ _EOT_
 # generate Ricty
 ########################################
 
-# generate modified Inconsolata
-$fontforge_cmd -script ${tmpdir}/${modified_inconsolata_generator} \
-    2> /dev/null || exit 4
-
-# generate modified Migu 1M
-$fontforge_cmd -script ${tmpdir}/${modified_migu1m_generator} \
-    2> /dev/null || exit 4
-
-# generate Ricty
-$fontforge_cmd -script ${tmpdir}/${ricty_generator} \
-    2> /dev/null || exit 4
+# generate
+if [ "$verbose_mode_flag" = "true" ]
+then
+    $fontforge_cmd -script ${tmpdir}/${modified_inconsolata_generator} \
+        || exit 4
+    $fontforge_cmd -script ${tmpdir}/${modified_migu1m_generator} \
+        || exit 4
+    $fontforge_cmd -script ${tmpdir}/${ricty_generator} \
+        || exit 4
+else
+    $fontforge_cmd -script ${tmpdir}/${modified_inconsolata_generator} \
+        2> /dev/null || exit 4
+    $fontforge_cmd -script ${tmpdir}/${modified_migu1m_generator} \
+        2> /dev/null || exit 4
+    $fontforge_cmd -script ${tmpdir}/${ricty_generator} \
+        2> /dev/null || exit 4
+fi
 
 # remove tmp
-if [ "$leave_tmp_flag" = "false" ]
+if [ "$leaving_tmp_flag" = "false" ]
 then
     echo "Remove temporary files"
     rm -rf $tmpdir
@@ -472,10 +487,18 @@ fi
 path2discord_patch=`dirname $0`/ricty_discord_patch.pe
 if [ -r $path2discord_patch ]
 then
-    $fontforge_cmd -script $path2discord_patch \
-        ${ricty_familyname}${ricty_addfamilyname}-Regular.ttf \
-        ${ricty_familyname}${ricty_addfamilyname}-Bold.ttf \
-        2> /dev/null || exit 4
+    if [ "$verbose_mode_flag" = "true" ]
+    then
+        $fontforge_cmd -script $path2discord_patch \
+            ${ricty_familyname}${ricty_addfamilyname}-Regular.ttf \
+            ${ricty_familyname}${ricty_addfamilyname}-Bold.ttf \
+            || exit 4
+    else
+        $fontforge_cmd -script $path2discord_patch \
+            ${ricty_familyname}${ricty_addfamilyname}-Regular.ttf \
+            ${ricty_familyname}${ricty_addfamilyname}-Bold.ttf \
+            2> /dev/null || exit 4
+    fi
 fi
 
 # exit
