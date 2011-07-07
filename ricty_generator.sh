@@ -1,9 +1,9 @@
 #!/bin/sh
 
 ########################################
-# Ricty Generator 3.1.0
+# Ricty Generator 3.2.0b
 #
-# Last modified: ricty_generator.sh on Sun, 19 Jun 2011.
+# Last modified: ricty_generator.sh on Thu, 07 Jul 2011.
 #
 # Author: Yasunori Yusa <lastname at save dot sys.t.u-tokyo.ac.jp>
 #
@@ -37,14 +37,21 @@
 ########################################
 
 # set version
-ricty_version="3.1.0"
+ricty_version="3.2.0b"
 
-# set ascent and descent (parameters concerning line height)
-ricty_ascent="815"
-ricty_descent="215"
+# set familyname
+ricty_familyname="Ricty"
+ricty_addfamilyname=""
+
+# set ascent and descent
+ricty_ascent=815
+ricty_descent=215
+
+# set path to fontforge command
+fontforge_cmd="fontforge"
 
 # set fonts directories used in auto flag
-fonts_dirs=". ${HOME}/.fonts /usr/local/share/fonts /usr/share/fonts"
+fonts_dirs=". ${HOME}/.fonts /usr/local/share/fonts /usr/share/fonts ${HOME}/Library/Fonts /Library/Fonts"
 
 # set filenames
 modified_inconsolata_generator="modified_inconsolata_generator.pe"
@@ -63,7 +70,7 @@ ricty_generator="ricty_generator.pe"
 cat << _EOT_
 Ricty Generator ${ricty_version}
 
-Copyright (c) 2011 Yasunori Yusa
+Author: Yasunori Yusa <lastname at save dot sys.t.u-tokyo.ac.jp>
 
 This script is for generating \`\`Ricty'' font from Inconsolata and Migu 1M.
 It requires 2-5 minutes to generate Ricty. Owing to SIL Open Font License
@@ -71,10 +78,76 @@ Version 1.1 section 5, it is PROHIBITED to distribute the generated font.
 
 _EOT_
 
+# help
+ricty_generator_help()
+{
+    echo "Usage: ricty_generator.sh [options] auto"
+    echo "       ricty_generator.sh [options]" \
+        "Inconsolata.otf Migu-1M-regular.ttf Migu-1M-bold.ttf"
+    echo ""
+    echo "Options:"
+    echo "  -h                     Display this infomation"
+    echo "  -f /path/to/fontforge  Set path to fontforge command"
+    echo "  -v                     Enable verbose mode (print all error/warning messages)"
+    echo "  -l                     Leave (NOT remove) temporary files"
+    echo "  -n string              Set additional fontfamily name (\`\`Ricty HERE'')"
+    echo "  -w                     Widen line space"
+    echo "  -W                     Widen line space extremely"
+    echo "  -z                     NOT visualize zenkaku space"
+    exit 0
+}
+
+# get options
+verbose_mode_flag="false"
+leaving_tmp_flag="false"
+invisible_zspace_flag="false"
+while getopts hf:vln:wWz OPT
+do
+    case $OPT in
+        "h" )
+            ricty_generator_help
+            ;;
+        "f" )
+            echo "Option: Set path to fontforge command: $OPTARG"
+            fontforge_cmd="$OPTARG"
+            ;;
+        "v" )
+            echo "Option: Enable verbose mode"
+            verbose_mode_flag="true"
+            ;;
+        "l" )
+            echo "Option: Leave (NOT remove) temporary files"
+            leaving_tmp_flag="true"
+            ;;
+        "n" )
+            echo "Option: Set additional fontfamily name: $OPTARG"
+            ricty_addfamilyname=`echo $OPTARG | sed -e 's/ //g'`
+            ;;
+        "w" )
+            echo "Option: Widen line space"
+            ricty_ascent=`expr $ricty_ascent + 128`
+            ricty_descent=`expr $ricty_descent + 32`
+            ;;
+        "W" )
+            echo "Option: Widen line space extremely"
+            ricty_ascent=`expr $ricty_ascent + 256`
+            ricty_descent=`expr $ricty_descent + 64`
+            ;;
+        "z" )
+            echo "Option: NOT visualize zenkaku space"
+            invisible_zspace_flag="true"
+            ;;
+        *   )
+            exit 1
+            ;;
+    esac
+done
+shift `expr $OPTIND - 1`
+
 # check fontforge existance
-if [ ! "$(which fontforge)" ]
+if [ ! "$(which $fontforge_cmd 2> /dev/null)" ]
 then
-    echo "Error: fontforge command not found" 1>&2
+    echo "Error: $fontforge_cmd command not found" 1>&2
     exit 1
 fi
 
@@ -85,23 +158,23 @@ then
     tmp=""
     for i in $fonts_dirs
     do
-	if [ -d $i ]; then tmp="$tmp $i"; fi
+        if [ -d $i ]; then tmp="$tmp $i"; fi
     done
     fonts_dirs=$tmp
     # search Inconsolata
     input_inconsolata=`find $fonts_dirs -follow -name Inconsolata.otf | head -n 1`
     if [ ! "$input_inconsolata" ]
     then
-	echo "Error: Inconsolata.otf not found" 1>&2
-	exit 1
+        echo "Error: Inconsolata.otf not found" 1>&2
+        exit 1
     fi
     # search Migu 1M
     input_migu1m_regu=`find $fonts_dirs -follow -name Migu-1M-regular.ttf | head -n 1`
     input_migu1m_bold=`find $fonts_dirs -follow -name Migu-1M-bold.ttf    | head -n 1`
     if [ ! "$input_migu1m_regu" -o ! "$input_migu1m_bold" ]
     then
-	echo "Error: Migu-1M-regular/bold.ttf not found" 1>&2
-	exit 1
+        echo "Error: Migu-1M-regular/bold.ttf not found" 1>&2
+        exit 1
     fi
 elif [ $# -eq 3 ]
 then
@@ -112,39 +185,36 @@ then
     # check file existance
     if [ ! -r $input_inconsolata ]
     then
-	echo "Error: $input_inconsolata not found" 1>&2
-	exit 1
+        echo "Error: $input_inconsolata not found" 1>&2
+        exit 1
     elif [ ! -r $input_migu1m_regu ]
     then
-	echo "Error: $input_migu1m_regu not found" 1>&2
-	exit 1
+        echo "Error: $input_migu1m_regu not found" 1>&2
+        exit 1
     elif [ ! -r $input_migu1m_bold ]
     then
-	echo "Error: $input_migu1m_bold not found" 1>&2
-	exit 1
+        echo "Error: $input_migu1m_bold not found" 1>&2
+        exit 1
     fi
     # check filename
     if [ "$(basename $input_inconsolata)" != "Inconsolata.otf" ]
     then
-	echo "Warning: $input_inconsolata is really Inconsolata?" 1>&2
+        echo "Warning: $input_inconsolata is really Inconsolata?" 1>&2
     fi
     if [ "$(basename $input_migu1m_regu)" != "Migu-1M-regular.ttf" ]
     then
-	echo "Warning: $input_migu1m_regu is really Migu 1M Regular?" 1>&2
+        echo "Warning: $input_migu1m_regu is really Migu 1M Regular?" 1>&2
     fi
     if [ "$(basename $input_migu1m_bold)" != "Migu-1M-bold.ttf" ]
     then
-	echo "Warning: $input_migu1m_bold is really Migu 1M Bold?" 1>&2
+        echo "Warning: $input_migu1m_bold is really Migu 1M Bold?" 1>&2
     fi
 else
-    echo "Usage: ricty_generator.sh auto"
-    echo "       ricty_generator.sh" \
-	"Inconsolata.otf Migu-1M-regular.ttf Migu-1M-bold.ttf"
-    exit 0
+    ricty_generator_help
 fi
 
 # make tmp
-if [ -w /tmp ]
+if [ -w "/tmp" -a "$leaving_tmp_flag" = "false" ]
 then
     tmpdir=`mktemp -d /tmp/ricty_generator_tmpdir.XXXXXX` || exit 2
 else
@@ -152,14 +222,22 @@ else
 fi
 
 # remove tmp by trapping
-trap "if [ -d $tmpdir ]; then echo 'Remove temporary files'; rm -rf $tmpdir; echo 'Abnormal terminated'; fi; exit 3" HUP INT QUIT
-trap "if [ -d $tmpdir ]; then echo 'Remove temporary files'; rm -rf $tmpdir; echo 'Abnormal terminated'; fi" EXIT
+if [ "$leaving_tmp_flag" = "false" ]
+then
+    trap "if [ -d $tmpdir ]; then echo 'Remove temporary files'; rm -rf $tmpdir; echo 'Abnormal terminated'; fi; exit 3" HUP INT QUIT
+    trap "if [ -d $tmpdir ]; then echo 'Remove temporary files'; rm -rf $tmpdir; echo 'Abnormal terminated'; fi" EXIT
+else
+    trap "if [ -d $tmpdir ]; echo 'Abnormal terminated'; fi; exit 3" HUP INT QUIT
+    trap "if [ -d $tmpdir ]; echo 'Abnormal terminated'; fi" EXIT
+fi
 
 ########################################
 # generate script for modified Inconsolata
 ########################################
 
 cat > ${tmpdir}/${modified_inconsolata_generator} << _EOT_
+#!$fontforge_cmd -script
+
 # print
 Print("Generate modified Inconsolata")
 
@@ -212,7 +290,7 @@ SelectWorthOutputting()
 ExpandStroke(30, 0, 0, 0, 1)
 Select(0u003e); Copy()           # >
 Select(0u003c); Paste(); HFlip() # <
-RemoveOverlap(); RoundToInt()
+RoundToInt(); RemoveOverlap(); RoundToInt()
 
 # save bold
 Save("${tmpdir}/${modified_inconsolata_bold}")
@@ -226,6 +304,8 @@ _EOT_
 ########################################
 
 cat > ${tmpdir}/${modified_migu1m_generator} << _EOT_
+#!$fontforge_cmd -script
+
 # print
 Print("Generate modified Migu 1M")
 
@@ -245,7 +325,7 @@ i = 0; while (i < SizeOf(input_list))
     ClearInstrs(); UnlinkReference()
     SetWidth(-1, 1); Scale(91, 91, 0, 0); SetWidth(110, 2); SetWidth(1, 1)
     Move(23, 0); SetWidth(-23, 1)
-    RemoveOverlap(); RoundToInt()
+    RoundToInt(); RemoveOverlap(); RoundToInt()
     # save
     Save("${tmpdir}/" + output_list[i])
     Print("Generated " + output_list[i])
@@ -259,6 +339,8 @@ _EOT_
 ########################################
 
 cat > ${tmpdir}/${ricty_generator} << _EOT_
+#!$fontforge_cmd -script
+
 # print
 Print("Generate Ricty")
 
@@ -267,7 +349,8 @@ inconsolata_list  = ["${tmpdir}/${modified_inconsolata_regu}", \\
                      "${tmpdir}/${modified_inconsolata_bold}"]
 migu1m_list       = ["${tmpdir}/${modified_migu1m_regu}", \\
                      "${tmpdir}/${modified_migu1m_bold}"]
-fontfamily        = "Ricty"
+fontfamily        = "$ricty_familyname"
+addfontfamily     = "$ricty_addfamilyname"
 fontstyle_list    = ["Regular", "Bold"]
 fontweight_list   = [400,       700]
 panoseweight_list = [5,         8]
@@ -293,11 +376,19 @@ i = 0; while (i < SizeOf(fontstyle_list))
     # set encoding to Unicode-bmp
     Reencode("unicode")
     # set configs
-    SetFontNames(fontfamily + "-" + fontstyle_list[i], \\
-                 fontfamily, \\
-                 fontfamily + " " + fontstyle_list[i], \\
-                 fontstyle_list[i], \\
-                 copyright, version)
+    if (addfontfamily != "")
+        SetFontNames(fontfamily + addfontfamily + "-" + fontstyle_list[i], \\
+                     fontfamily + " " + addfontfamily, \\
+                     fontfamily + " " + addfontfamily + " " + fontstyle_list[i], \\
+                     fontstyle_list[i], \\
+                     copyright, version)
+    else
+        SetFontNames(fontfamily + "-" + fontstyle_list[i], \\
+                     fontfamily, \\
+                     fontfamily + " " + fontstyle_list[i], \\
+                     fontstyle_list[i], \\
+                     copyright, version)
+    endif
     ScaleToEm(860, 140)
     SetOS2Value("Weight", fontweight_list[i]) # Book or Bold
     SetOS2Value("Width",                   5) # Medium
@@ -325,8 +416,10 @@ i = 0; while (i < SizeOf(fontstyle_list))
     MergeFonts(inconsolata_list[i])
     MergeFonts(migu1m_list[i])
     # edit zenkaku space (from ballot box and heavy greek cross)
-    Select(0u2610); Copy(); Select(0u3000); Paste()
-    Select(0u271a); Copy(); Select(0u3000); PasteInto(); OverlapIntersect()
+    if ("$invisible_zspace_flag" == "false")
+        Select(0u2610); Copy(); Select(0u3000); Paste()
+        Select(0u271a); Copy(); Select(0u3000); PasteInto(); OverlapIntersect()
+    endif
     # edit zenkaku comma and period
     Select(0uff0c); Scale(150, 150, 100, 0); SetWidth(1000)
     Select(0uff0e); Scale(150, 150, 100, 0); SetWidth(1000)
@@ -347,10 +440,15 @@ i = 0; while (i < SizeOf(fontstyle_list))
     OverlapIntersect()
     Copy(); Select(0u2015); Paste()
     # post proccess
-    SelectWorthOutputting(); RemoveOverlap(); RoundToInt()
+    SelectWorthOutputting(); RoundToInt(); RemoveOverlap(); RoundToInt()
     # generate
-    Generate(fontfamily + "-" + fontstyle_list[i] + ".ttf", "", 0x84)
-    Print("Generated " + fontfamily + "-" + fontstyle_list[i] + ".ttf")
+    if (addfontfamily != "")
+        Generate(fontfamily + addfontfamily + "-" + fontstyle_list[i] + ".ttf", "", 0x84)
+        Print("Generated " + fontfamily + addfontfamily + "-" + fontstyle_list[i] + ".ttf")
+    else
+        Generate(fontfamily + "-" + fontstyle_list[i] + ".ttf", "", 0x84)
+        Print("Generated " + fontfamily + "-" + fontstyle_list[i] + ".ttf")
+    endif
     Close()
 i += 1; endloop
 Quit()
@@ -360,28 +458,47 @@ _EOT_
 # generate Ricty
 ########################################
 
-# generate modified Inconsolata
-fontforge -script ${tmpdir}/${modified_inconsolata_generator} \
-    2> /dev/null || exit 4
-
-# generate modified Migu 1M
-fontforge -script ${tmpdir}/${modified_migu1m_generator} \
-    2> /dev/null || exit 4
-
-# generate Ricty
-fontforge -script ${tmpdir}/${ricty_generator} \
-    2> /dev/null || exit 4
+# generate
+if [ "$verbose_mode_flag" = "true" ]
+then
+    $fontforge_cmd -script ${tmpdir}/${modified_inconsolata_generator} \
+        || exit 4
+    $fontforge_cmd -script ${tmpdir}/${modified_migu1m_generator} \
+        || exit 4
+    $fontforge_cmd -script ${tmpdir}/${ricty_generator} \
+        || exit 4
+else
+    $fontforge_cmd -script ${tmpdir}/${modified_inconsolata_generator} \
+        2> /dev/null || exit 4
+    $fontforge_cmd -script ${tmpdir}/${modified_migu1m_generator} \
+        2> /dev/null || exit 4
+    $fontforge_cmd -script ${tmpdir}/${ricty_generator} \
+        2> /dev/null || exit 4
+fi
 
 # remove tmp
-echo "Remove temporary files"
-rm -rf $tmpdir
+if [ "$leaving_tmp_flag" = "false" ]
+then
+    echo "Remove temporary files"
+    rm -rf $tmpdir
+fi
 
 # generate Ricty Discord (if the script exists)
 path2discord_patch=`dirname $0`/ricty_discord_patch.pe
 if [ -r $path2discord_patch ]
 then
-    fontforge -script $path2discord_patch Ricty-Regular.ttf Ricty-Bold.ttf \
-	2> /dev/null || exit 4
+    if [ "$verbose_mode_flag" = "true" ]
+    then
+        $fontforge_cmd -script $path2discord_patch \
+            ${ricty_familyname}${ricty_addfamilyname}-Regular.ttf \
+            ${ricty_familyname}${ricty_addfamilyname}-Bold.ttf \
+            || exit 4
+    else
+        $fontforge_cmd -script $path2discord_patch \
+            ${ricty_familyname}${ricty_addfamilyname}-Regular.ttf \
+            ${ricty_familyname}${ricty_addfamilyname}-Bold.ttf \
+            2> /dev/null || exit 4
+    fi
 fi
 
 # exit
