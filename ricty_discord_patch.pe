@@ -1,11 +1,11 @@
 #!/usr/bin/fontforge -script
 
 ########################################
-# Ricty Discord Patch for Ricty 3.0.1
+# Ricty Discord Patch for Ricty 3.0.2
 #
-# Last modified: ricty_discord_patch.pe on Thu, 20 May 2011.
+# Last modified: ricty_discord_patch.pe on Thu, 02 Jun 2011.
 #
-# Copyright (c) 2011 Yasunori Yusa
+# Author: Yasunori Yusa <lastname at save dot sys.t.u-tokyo.ac.jp>
 #
 # This script is for generating ``Ricty Discord'' from Ricty. Owing to SIL
 # Open Font License Version 1.1 section 5, it is PROHIBITED to distribute
@@ -17,21 +17,32 @@
 ########################################
 
 # check args
-if ($argc != 2)
-    Error("Usage: build_ricty_discord.pe fontfamily-fontstyle.ttf")
+if ($argc == 1)
+    Print("Usage: build_ricty_discord.pe fontfamily-fontstyle.ttf")
+    Quit()
 endif
 
+# begin loop in args
+i = 1
+while (i < $argc)
+
+########################################
+# set vars
+########################################
+
 # get args
-input_ttf  = $1:t
-input      = input_ttf:r
-if (input_ttf:e != "ttf")
-    Error("Usage: build_ricty_discord.pe fontfamily-fontstyle.ttf")
+input_ttf  = $argv[i]
+input      = input_ttf:t:r
+if (input_ttf:t:e != "ttf")
+    Print("Usage: build_ricty_discord.pe fontfamily-fontstyle.ttf")
+    Quit()
 endif
 
 # get font names
 hyphen_idx = Strrstr(input, '-')
 if (hyphen_idx == -1)
-    Error("Usage: build_ricty_discord.pe fontfamily-fontstyle.ttf")
+    Print("Usage: build_ricty_discord.pe fontfamily-fontstyle.ttf")
+    Quit()
 endif
 fontfamily  = Strsub(input, 0, hyphen_idx)
 fontfamily2 = "Discord"
@@ -42,7 +53,7 @@ fontstyle   = Strsub(input, hyphen_idx+1)
 ########################################
 
 # open
-Open($1)
+Open(input_ttf)
 
 # set encoding to Unicode-bmp
 Reencode("unicode")
@@ -97,8 +108,13 @@ Select(0u0110); Copy()
 Select(0u0044); Paste()
 
 # Z -> Z with cross-bar
-Select(65605);  Copy() # Inconsolata's unused glyph
-Select(0u005a); PasteWithOffset(-20, -290); RemoveOverlap()
+Select(0u00af); Copy()  # macron
+Select(65611);  Paste() # tmp glyph
+Transform(100, -65, 0, 100, 0, -12000); SetWidth(500)
+Copy()
+Select(0u005a);  PasteInto()
+RemoveOverlap(); RoundToInt()
+Select(65611);   Clear() # tmp glyph
 
 # ^ -> magnified
 Select(0u005e);  Scale(115, 115, 250, 600); SetWidth(500)
@@ -118,8 +134,13 @@ Select(65608);  Copy()
 Select(0u0072); Paste()
 
 # z -> z with cross-bar
-Select(65605);  Copy() # Inconsolata's unused glyph
-Select(0u007a); PasteWithOffset(-35, -375); RemoveOverlap()
+Select(0u00af); Copy()  # macron
+Select(65611);  Paste() # tmp glyph
+Transform(75, -52, 0, 100, 5500, -23500); SetWidth(500)
+Copy()
+Select(0u007a);  PasteInto()
+RemoveOverlap(); RoundToInt()
+Select(65611);   Clear() # tmp glyph
 
 # | -> broken bar (Inconsolata's glyph)
 Select(0u00a6); Copy()
@@ -134,3 +155,8 @@ Select(0u007e); Move(0, 120)
 
 Generate(fontfamily + fontfamily2 + "-" + fontstyle + ".ttf", "", 0x84)
 Print("Generated " + fontfamily + fontfamily2 + "-" + fontstyle + ".ttf")
+Close()
+
+# end loop
+i += 1; endloop
+Quit()
