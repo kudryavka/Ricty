@@ -1,11 +1,11 @@
 #!/bin/sh
 
 ########################################
-# Ricty Generator 3.0.0
+# Ricty Generator 3.0.1
 #
-# Last modified: ricty_generator.sh on Fri, 17 May 2011.
+# Last modified: ricty_generator.sh on Thu, 20 May 2011.
 #
-# Copyright (c) Yasunori Yusa
+# Copyright (c) 2011 Yasunori Yusa
 #
 # This script is for generating ``Ricty'' font from Inconsolata and Migu 1M.
 # It requires 2-5 minutes to generate Ricty. Owing to SIL Open Font License
@@ -20,23 +20,51 @@
 #    Debian/Ubuntu: # apt-get install fontforge
 #    Fedora:        # yum install fontforge
 #    Other Linux:   Get from http://fontforge.sourceforge.net/
-# 2. Install Inconsolata
+# 2. Get Inconsolata.otf
 #    Debian/Ubuntu: # apt-get install ttf-inconsolata
 #    Other Linux:   Get from http://levien.com/type/myfonts/inconsolata.html
-# 3. Install Migu 1M
+# 3. Get Migu-1M-regular/bold.ttf
 #                   Get from http://mix-mplus-ipa.sourceforge.jp/
 # 4. Run this script
 #    % sh ricty_generator.sh \
-#      /.../Inconsolata.otf /.../Migu-1M-regular.ttf /.../Migu-1M-bold.ttf
+#      Inconsolata.otf Migu-1M-regular.ttf Migu-1M-bold.ttf
 # 5. Install Ricty
 #    % cp Ricty-{Regular,Bold}.ttf ~/.fonts/
 #    % fc-cache -vf
 ########################################
 
+# version
+ricty_version="3.0.1"
+
+# print
+cat << _EOT_
+Ricty Generator ${ricty_version}
+
+Copyright (c) 2011 Yasunori Yusa
+
+This script is for generating \`\`Ricty'' font from Inconsolata and Migu 1M.
+It requires 2-5 minutes to generate Ricty. Owing to SIL Open Font License
+Version 1.1 section 5, it is PROHIBITED to distribute the generated font.
+
+_EOT_
+
+########################################
+# preprocess
+########################################
+
+# parameters
+modified_inconsolata_generator="modified_inconsolata_generator.pe"
+modified_inconsolata_regular="Modified-Inconsolata-Regular.sfd"
+modified_inconsolata_bold="Modified-Inconsolata-Bold.sfd"
+modified_migu1m_generator="modified_migu1m_generator.pe"
+modified_migu1m_regular="Modified-Migu-1M-regular.sfd"
+modified_migu1m_bold="Modified-Migu-1M-bold.sfd"
+ricty_generator="ricty_generator.pe"
+
 # check argc
 if [ $# -ne 3 ]
 then
-    echo "Usage: sh ricty_generator.sh" \
+    echo "Usage: ricty_generator.sh" \
 	"Inconsolata.otf Migu-1M-regular.ttf Migu-1M-bold.ttf"
     exit 0
 fi
@@ -47,74 +75,61 @@ input_migu1m_regular=$2
 input_migu1m_bold=$3
 
 # check file existance
-if [ ! -f $input_inconsolata ]
+if [ ! -r $input_inconsolata ]
 then
-    echo "Error: $input_inconsolata not found"
+    echo "Error: $input_inconsolata not found" 1>&2
     exit 1
 fi
-if [ ! -f $input_migu1m_regular ]
+if [ ! -r $input_migu1m_regular ]
 then
-    echo "Error: $input_migu1m_regular not found"
+    echo "Error: $input_migu1m_regular not found" 1>&2
     exit 1
 fi
-if [ ! -f $input_migu1m_bold ]
+if [ ! -r $input_migu1m_bold ]
 then
-    echo "Error: $input_migu1m_bold not found"
+    echo "Error: $input_migu1m_bold not found" 1>&2
     exit 1
 fi
 
 # check filename
 if [ `basename $input_inconsolata` != "Inconsolata.otf" ]
 then
-    echo "Warning: $input_inconsolata is really Inconsolata?"
+    echo "Warning: $input_inconsolata is really Inconsolata?" 1>&2
 fi
 if [ `basename $input_migu1m_regular` != "Migu-1M-regular.ttf" ]
 then
-    echo "Warning: $input_migu1m_regular is really Migu 1M Regular?"
+    echo "Warning: $input_migu1m_regular is really Migu 1M Regular?" 1>&2
 fi
 if [ `basename $input_migu1m_bold` != "Migu-1M-bold.ttf" ]
 then
-    echo "Warning: $input_migu1m_bold is really Migu 1M Bold?"
+    echo "Warning: $input_migu1m_bold is really Migu 1M Bold?" 1>&2
 fi
 
-# parameters
-ricty_version="3.0.0"
-modified_inconsolata_generator="modified_inconsolata_generator.pe"
-modified_inconsolata_regular="Modified-Inconsolata-Regular.sfd"
-modified_inconsolata_bold="Modified-Inconsolata-Bold.sfd"
-modified_migu1m_generator="modified_migu1m_generator.pe"
-modified_migu1m_regular="Modified-Migu-1M-regular.sfd"
-modified_migu1m_bold="Modified-Migu-1M-bold.sfd"
-ricty_generator="ricty_generator.pe"
-tmpdir=`mktemp -d ricty_generator_workspace.XXXXXX`
+# make tmp
+if [ -w /tmp ]
+then
+    tmpdir=`mktemp -d /tmp/ricty_generator_tmpdir.XXXXXX` || exit 2
+else
+    tmpdir=`mktemp -d ./ricty_generator_tmpdir.XXXXXX`    || exit 2
+fi
+
+# remove tmp when abnormal termination
+trap "echo 'Remove temporary files'; rm -rf $tmpdir; echo 'Abnormal terminated'; exit 3" HUP INT QUIT
 
 ########################################
-# print message
+# generate script for modified Inconsolata
 ########################################
 
-cat << _EOF_
-Ricty Generator $ricty_version
+cat > ${tmpdir}/${modified_inconsolata_generator} << _EOT_
+# print
+Print("Generate modified Inconsolata")
 
-Copyright (c) Yasunori Yusa
-
-This script is for generating \`\`Ricty'' font from Inconsolata and Migu 1M.
-It requires 2-5 minutes to generate Ricty. Owing to SIL Open Font License
-Version 1.1 section 5, it is PROHIBITED to distribute the generated font.
-
-_EOF_
-
-########################################
-# generate modified Inconsolata
-########################################
-
-echo "Generate modified Inconsolata"
-
-# generate script
-cat > $tmpdir/$modified_inconsolata_generator << _EOF_
 # open
-Open("$input_inconsolata")
+Open("${input_inconsolata}")
+
 # scale
 ScaleToEm(860, 140)
+
 # remove ambiguous
 Select(0u00a2); Clear() # cent
 Select(0u00a3); Clear() # pound
@@ -142,75 +157,84 @@ Select(0u2191); Clear() # uparrow
 Select(0u2193); Clear() # downarrow
 Select(0u2212); Clear() # minus
 Select(0u2423); Clear() # open box
+
 # save regular
-Save("$tmpdir/$modified_inconsolata_regular")
+Save("${tmpdir}/${modified_inconsolata_regular}")
+Print("Generated ${modified_inconsolata_regular}")
+
 # bold-face regular
-Print("While bold-facing, wait a bit, a bit...")
+Print("While bold-facing Inconsolata, wait a bit, maybe a bit...")
 SelectWorthOutputting()
 ExpandStroke(30, 0, 0, 0, 1)
 RemoveOverlap()
 RoundToInt()
 Select(0u003e); Copy()           # >
 Select(0u003c); Paste(); HFlip() # <
+
 # save bold
-Save("$tmpdir/$modified_inconsolata_bold")
-_EOF_
-
-# generate modified Inconsolata
-fontforge -script $tmpdir/$modified_inconsolata_generator
+Save("${tmpdir}/${modified_inconsolata_bold}")
+Print("Generated ${modified_inconsolata_bold}")
+_EOT_
 
 ########################################
-# generate modified Migu
+# generate script for modified Migu 1M
 ########################################
 
-# generate script
-cat > $tmpdir/$modified_migu1m_generator << _EOF_
+cat > ${tmpdir}/${modified_migu1m_generator} << _EOT_
+# print
+Print("Generate modified Migu 1M")
+
 # parameters
-input_list  = ["$input_migu1m_regular", "$input_migu1m_bold"]
-output_list = ["$modified_migu1m_regular", "$modified_migu1m_bold"]
+input_list  = ["${input_migu1m_regular}",    "${input_migu1m_bold}"]
+output_list = ["${modified_migu1m_regular}", "${modified_migu1m_bold}"]
+
 # regular and bold loop
 i = 0; while (i < SizeOf(input_list))
+    # open
     Open(input_list[i])
-    Print("While scaling and moving, wait a little...")
+    # scale Migu 1M
+    Print("While scaling " + input_list[i]:t:r + ", wait a little...")
     SelectWorthOutputting()
     SetWidth(-1, 1); Scale(91, 91, 0, 0); SetWidth(110, 2); SetWidth(1, 1)
     Move(23, 0); SetWidth(-23, 1)
     RemoveOverlap(); RoundToInt()
-    Save("$tmpdir/"+output_list[i])
+    # save
+    Save("${tmpdir}/" + output_list[i])
+    Print("Generated " + output_list[i])
 i += 1; endloop
-_EOF_
-
-# generate modified Migu
-fontforge -script $tmpdir/$modified_migu1m_generator
+_EOT_
 
 ########################################
-# generate Ricty
+# generate script for Ricty
 ########################################
 
-# generate script
-cat > $tmpdir/$ricty_generator << _EOF_
+cat > ${tmpdir}/${ricty_generator} << _EOT_
+# print
+Print("Generate Ricty")
+
 # parameters
-inconsolata_list = ["$tmpdir/$modified_inconsolata_regular", \
-                    "$tmpdir/$modified_inconsolata_bold"]
-migu1m_list      = ["$tmpdir/$modified_migu1m_regular", \
-                    "$tmpdir/$modified_migu1m_bold"]
+inconsolata_list = ["${tmpdir}/${modified_inconsolata_regular}", \\
+                    "${tmpdir}/${modified_inconsolata_bold}"]
+migu1m_list      = ["${tmpdir}/${modified_migu1m_regular}", \\
+                    "${tmpdir}/${modified_migu1m_bold}"]
 fontfamily       = "Ricty"
 fontstyle_list   = ["Regular", "Bold"]
 fontweight_list  = [400,       700]
-copyright        = "Copyright (c) 2011 Yasunori Yusa\n" \
-                 + "Copyright (c) 2006-2011 Raph Levien\n" \
-                 + "Copyright (c) 2006-2011 itouhiro\n" \
-                 + "Copyright (c) 2002-2011 M+ FONTS PROJECT\n" \
-                 + "Copyright (c) 2003-2011 " \
-                 + "Information-technology Promotion Agency, Japan (IPA)\n" \
-                 + "Licenses:\n" \
-                 + "SIL Open Font License Version 1.1 " \
-                 + "(http://scripts.sil.org/OFL)\n" \
-                 + "M+ FONTS LICENSE " \
-                 + "(http://mplus-fonts.sourceforge.jp/mplus-outline-fonts/)\n" \
-                 + "IPA Font License Agreement v1.0 " \
+copyright        = "Copyright (c) 2011 Yasunori Yusa\n" \\
+                 + "Copyright (c) 2006-2011 Raph Levien\n" \\
+                 + "Copyright (c) 2006-2011 itouhiro\n" \\
+                 + "Copyright (c) 2002-2011 M+ FONTS PROJECT\n" \\
+                 + "Copyright (c) 2003-2011 " \\
+                 + "Information-technology Promotion Agency, Japan (IPA)\n" \\
+                 + "Licenses:\n" \\
+                 + "SIL Open Font License Version 1.1 " \\
+                 + "(http://scripts.sil.org/OFL)\n" \\
+                 + "M+ FONTS LICENSE " \\
+                 + "(http://mplus-fonts.sourceforge.jp/mplus-outline-fonts/#license)\n" \\
+                 + "IPA Font License Agreement v1.0 " \\
                  + "(http://ipafont.ipa.go.jp/ipa_font_license_v1.html)"
-version          = "$ricty_version"
+version          = "${ricty_version}"
+
 # regular and bold loop
 i = 0; while (i < SizeOf(fontstyle_list))
     # new file
@@ -218,32 +242,35 @@ i = 0; while (i < SizeOf(fontstyle_list))
     # set encoding to Unicode-bmp
     Reencode("unicode")
     # set configs
-    SetFontNames(fontfamily+"-"+fontstyle_list[i], \
-                 fontfamily, fontfamily+" "+fontstyle_list[i], \
-                 fontstyle_list[i], copyright, version)
+    SetFontNames(fontfamily + "-" + fontstyle_list[i], \\
+                 fontfamily, \\
+                 fontfamily + " " + fontstyle_list[i], \\
+                 fontstyle_list[i], \\
+                 copyright, version)
     ScaleToEm(860, 140)
     SetOS2Value("Weight", fontweight_list[i]) # Book or Bold
-    SetOS2Value("Width",           5) # Medium
-    SetOS2Value("FSType",          0)
-    SetOS2Value("VendorID",   "PfEd")
-    SetOS2Value("IBMFamily",    2057) # SS Typewriter Gothic
-    SetOS2Value("WinAscent",     800)
-    SetOS2Value("WinDescent",    215)
-    SetOS2Value("TypoAscent",    860)
-    SetOS2Value("TypoDescent",  -140)
-    SetOS2Value("TypoLineGap",     0)
-    SetOS2Value("HHeadAscent",   800)
-    SetOS2Value("HHeadDescent", -215)
-    SetOS2Value("HHeadLineGap",    0)
-    SetOS2Value("WinAscentIsOffset",    0)
-    SetOS2Value("WinDescentIsOffset",   0)
-    SetOS2Value("TypoAscentIsOffset",   0)
-    SetOS2Value("TypoDescentIsOffset",  0)
-    SetOS2Value("HHeadAscentIsOffset",  0)
-    SetOS2Value("HHeadDescentIsOffset", 0)
+    SetOS2Value("Width",                   5) # Medium
+    SetOS2Value("FSType",                  0)
+    SetOS2Value("VendorID",           "PfEd")
+    SetOS2Value("IBMFamily",            2057) # SS Typewriter Gothic
+    SetOS2Value("WinAscent",             800)
+    SetOS2Value("WinDescent",            215)
+    SetOS2Value("TypoAscent",            860)
+    SetOS2Value("TypoDescent",          -140)
+    SetOS2Value("TypoLineGap",             0)
+    SetOS2Value("HHeadAscent",           800)
+    SetOS2Value("HHeadDescent",         -215)
+    SetOS2Value("HHeadLineGap",            0)
+    SetOS2Value("WinAscentIsOffset",       0)
+    SetOS2Value("WinDescentIsOffset",      0)
+    SetOS2Value("TypoAscentIsOffset",      0)
+    SetOS2Value("TypoDescentIsOffset",     0)
+    SetOS2Value("HHeadAscentIsOffset",     0)
+    SetOS2Value("HHeadDescentIsOffset",    0)
     SetPanose(3, 9) # Monospaced
     # merge fonts
-    Print("While merging, wait a little more...")
+    Print("While merging " + inconsolata_list[i]:t:r \\
+          + " and " +migu1m_list[i]:t:r + ", wait a little more...")
     MergeFonts(inconsolata_list[i])
     MergeFonts(migu1m_list[i])
     # edit zenkaku space (from ballot box and heavy greek cross)
@@ -271,19 +298,41 @@ i = 0; while (i < SizeOf(fontstyle_list))
     # post proccess
     SelectWorthOutputting(); RemoveOverlap(); RoundToInt()
     # generate
-    Generate(fontfamily+"-"+fontstyle_list[i]+".ttf", "", 0x84)
+    Generate(fontfamily + "-" + fontstyle_list[i] + ".ttf", "", 0x84)
+    Print("Generated " + fontfamily + "-" + fontstyle_list[i] + ".ttf")
 i += 1; endloop
-_EOF_
+_EOT_
+
+########################################
+# generate Ricty
+########################################
+
+# generate modified Inconsolata
+fontforge -script ${tmpdir}/${modified_inconsolata_generator} \
+    2> /dev/null || exit 4
+
+# generate modified Migu 1M
+fontforge -script ${tmpdir}/${modified_migu1m_generator} \
+    2> /dev/null || exit 4
 
 # generate Ricty
-fontforge -script $tmpdir/$ricty_generator
-
-########################################
-# post process
-########################################
+fontforge -script ${tmpdir}/${ricty_generator} \
+    2> /dev/null || exit 4
 
 # remove tmp
+echo "Remove temporary files"
 rm -rf $tmpdir
 
-# print
+# generate Ricty Discord (if the script exists)
+path2discord_patch=`dirname $0`/ricty_discord_patch.pe
+if [ -f $path2discord_patch ]
+then
+    fontforge -script $path2discord_patch \
+	Ricty-Regular.ttf 2> /dev/null || exit 4
+    fontforge -script $path2discord_patch \
+	Ricty-Bold.ttf    2> /dev/null || exit 4
+fi
+
+# exit
 echo "Succeeded to generate Ricty!"
+exit 0

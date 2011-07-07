@@ -1,11 +1,11 @@
 #!/usr/bin/fontforge -script
 
 ########################################
-# Ricty Discord Patch for Ricty 3.0.0
+# Ricty Discord Patch for Ricty 3.0.1
 #
-# Last modified: ricty_discord_patch.pe on Sun, 17 May 2011.
+# Last modified: ricty_discord_patch.pe on Thu, 20 May 2011.
 #
-# Copyright (c) Yasunori Yusa
+# Copyright (c) 2011 Yasunori Yusa
 #
 # This script is for generating ``Ricty Discord'' from Ricty. Owing to SIL
 # Open Font License Version 1.1 section 5, it is PROHIBITED to distribute
@@ -33,55 +33,51 @@ hyphen_idx = Strrstr(input, '-')
 if (hyphen_idx == -1)
     Error("Usage: build_ricty_discord.pe fontfamily-fontstyle.ttf")
 endif
-fontfamily         = Strsub(input, 0, hyphen_idx)
-fontfamily_edition = "Discord"
-fontstyle          = Strsub(input, hyphen_idx+1)
+fontfamily  = Strsub(input, 0, hyphen_idx)
+fontfamily2 = "Discord"
+fontstyle   = Strsub(input, hyphen_idx+1)
 
 ########################################
 # open and set configs
 ########################################
 
 # open
-Print("Open "+$1)
 Open($1)
 
 # set encoding to Unicode-bmp
 Reencode("unicode")
 
 # set configs
-Print("Set font config")
-SetFontNames(fontfamily+fontfamily_edition+"-"+fontstyle, \
-             fontfamily+" "+fontfamily_edition, \
-             fontfamily+" "+fontfamily_edition+" "+fontstyle, \
+SetFontNames(fontfamily + fontfamily2 + "-" + fontstyle, \
+             fontfamily + " " + fontfamily2, \
+             fontfamily + " " + fontfamily2 + " " + fontstyle, \
              fontstyle)
 
 ########################################
 # edit some glyphs
 ########################################
 
-Print("Edit some glyphs")
-
 # " -> magnified
-Select(0u0022); Scale(115, 115, 250, 600); SetWidth(500)
+Select(0u0022);  Scale(115, 115, 250, 600); SetWidth(500)
 RemoveOverlap(); RoundToInt()
 
 # ' -> magnified
-Select(0u0027); Scale(115, 115, 250, 600); SetWidth(500)
+Select(0u0027);  Scale(115, 115, 250, 600); SetWidth(500)
 RemoveOverlap(); RoundToInt()
 
 # , -> magnified
-Select(0u002c); Scale(115, 115, 250, 0); SetWidth(500)
+Select(0u002c);  Scale(115, 115, 250, 0); SetWidth(500)
 RemoveOverlap(); RoundToInt()
 
 # . -> magnified
-Select(0u002e); Scale(115, 115, 250, 0); SetWidth(500)
+Select(0u002e);  Scale(115, 115, 250, 0); SetWidth(500)
 RemoveOverlap(); RoundToInt()
 
 # 0 -> dotted 0
-Select(0u00b7); Copy() # middle dot
-Select(0u0030); Paste(); CenterInWidth()
-Select(65610); Copy() # zero (Inconsolata's unused glyph)
-Select(0u0030); PasteInto()
+Select(0u00b7);  Copy() # middle dot
+Select(0u0030);  Paste(); CenterInWidth()
+Select(65610);   Copy() # zero (Inconsolata's unused glyph)
+Select(0u0030);  PasteInto()
 RemoveOverlap(); RoundToInt()
 
 # 7 -> 7 with cross-bar
@@ -89,11 +85,11 @@ Select(0u00af); Copy() # macron
 Select(0u0037); PasteWithOffset(20, -263); RemoveOverlap()
 
 # : -> magnified
-Select(0u003a); Scale(115, 115, 250, 0); SetWidth(500)
+Select(0u003a);  Scale(115, 115, 250, 0); SetWidth(500)
 RemoveOverlap(); RoundToInt()
 
 # ; -> magnified
-Select(0u003b); Scale(115, 115, 250, 0); SetWidth(500)
+Select(0u003b);  Scale(115, 115, 250, 0); SetWidth(500)
 RemoveOverlap(); RoundToInt()
 
 # D -> eth
@@ -101,15 +97,15 @@ Select(0u0110); Copy()
 Select(0u0044); Paste()
 
 # Z -> Z with cross-bar
-Select(65605); Copy() # Inconsolata's unused glyph
+Select(65605);  Copy() # Inconsolata's unused glyph
 Select(0u005a); PasteWithOffset(-20, -290); RemoveOverlap()
 
 # ^ -> magnified
-Select(0u005e); Scale(115, 115, 250, 600); SetWidth(500)
+Select(0u005e);  Scale(115, 115, 250, 600); SetWidth(500)
 RemoveOverlap(); RoundToInt()
 
 # ` -> magnified
-Select(0u0060); Scale(115, 115, 250, 600); SetWidth(500)
+Select(0u0060);  Scale(115, 115, 250, 600); SetWidth(500)
 RemoveOverlap(); RoundToInt()
 
 # l -> cut off left-bottom serif
@@ -118,11 +114,11 @@ Rotate(180); Move(1, 0); SetWidth(500)
 PasteInto(); OverlapIntersect()
 
 # r -> r of serif (Inconsolata's unused glyph)
-Select(65608); Copy()
+Select(65608);  Copy()
 Select(0u0072); Paste()
 
 # z -> z with cross-bar
-Select(65605); Copy() # Inconsolata's unused glyph
+Select(65605);  Copy() # Inconsolata's unused glyph
 Select(0u007a); PasteWithOffset(-35, -375); RemoveOverlap()
 
 # | -> broken bar (Inconsolata's glyph)
@@ -136,6 +132,5 @@ Select(0u007e); Move(0, 120)
 # generate
 ########################################
 
-Print("Generate "+fontfamily+fontfamily_edition+"-"+fontstyle+".ttf")
-
-Generate(fontfamily+fontfamily_edition+"-"+fontstyle+".ttf", "", 0x84)
+Generate(fontfamily + fontfamily2 + "-" + fontstyle + ".ttf", "", 0x84)
+Print("Generated " + fontfamily + fontfamily2 + "-" + fontstyle + ".ttf")
