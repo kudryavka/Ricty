@@ -1,9 +1,9 @@
-#!/usr/bin/fontforge -script
+#!/usr/bin/env fontforge -script
 
 ########################################
-# Ricty Discord Patch for Ricty 3.0.2
+# Ricty Discord Patch for Ricty 3.1.0
 #
-# Last modified: ricty_discord_patch.pe on Thu, 02 Jun 2011.
+# Last modified: ricty_discord_patch.pe on Sun, 19 Jun 2011.
 #
 # Author: Yasunori Yusa <lastname at save dot sys.t.u-tokyo.ac.jp>
 #
@@ -12,13 +12,13 @@
 # the generated font.
 #
 # How to use:
-# % fontforge -script build_ricty_discord.pe Ricty-Regular.ttf
-# % fontforge -script build_ricty_discord.pe Ricty-Bold.ttf
+# % fontforge -script ricty_discord_patch.pe Ricty-Regular.ttf
+# % fontforge -script ricty_discord_patch.pe Ricty-Bold.ttf
 ########################################
 
 # check args
 if ($argc == 1)
-    Print("Usage: build_ricty_discord.pe fontfamily-fontstyle.ttf")
+    Print("Usage: ricty_discord_patch.pe fontfamily-fontstyle.ttf")
     Quit()
 endif
 
@@ -34,19 +34,19 @@ while (i < $argc)
 input_ttf  = $argv[i]
 input      = input_ttf:t:r
 if (input_ttf:t:e != "ttf")
-    Print("Usage: build_ricty_discord.pe fontfamily-fontstyle.ttf")
+    Print("Usage: ricty_discord_patch.pe fontfamily-fontstyle.ttf")
     Quit()
 endif
 
 # get font names
 hyphen_idx = Strrstr(input, '-')
 if (hyphen_idx == -1)
-    Print("Usage: build_ricty_discord.pe fontfamily-fontstyle.ttf")
+    Print("Usage: ricty_discord_patch.pe fontfamily-fontstyle.ttf")
     Quit()
 endif
-fontfamily  = Strsub(input, 0, hyphen_idx)
-fontfamily2 = "Discord"
-fontstyle   = Strsub(input, hyphen_idx+1)
+inputfamily  = Strsub(input, 0, hyphen_idx)
+inputstyle   = Strsub(input, hyphen_idx+1)
+suffixfamily = "Discord"
 
 ########################################
 # open and set configs
@@ -59,10 +59,10 @@ Open(input_ttf)
 Reencode("unicode")
 
 # set configs
-SetFontNames(fontfamily + fontfamily2 + "-" + fontstyle, \
-             fontfamily + " " + fontfamily2, \
-             fontfamily + " " + fontfamily2 + " " + fontstyle, \
-             fontstyle)
+SetFontNames(inputfamily + suffixfamily + "-" + inputstyle, \
+             $familyname + " " + suffixfamily, \
+             $familyname + " " + suffixfamily + " " + inputstyle, \
+             inputstyle)
 
 ########################################
 # edit some glyphs
@@ -153,8 +153,8 @@ Select(0u007e); Move(0, 120)
 # generate
 ########################################
 
-Generate(fontfamily + fontfamily2 + "-" + fontstyle + ".ttf", "", 0x84)
-Print("Generated " + fontfamily + fontfamily2 + "-" + fontstyle + ".ttf")
+Generate(inputfamily + suffixfamily + "-" + inputstyle + ".ttf", "", 0x84)
+Print("Generated " + inputfamily + suffixfamily + "-" + inputstyle + ".ttf")
 Close()
 
 # end loop

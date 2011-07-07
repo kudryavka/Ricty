@@ -1,9 +1,9 @@
 #!/bin/sh
 
 ########################################
-# Ricty Generator 3.0.2
+# Ricty Generator 3.1.0
 #
-# Last modified: ricty_generator.sh on Thu, 02 Jun 2011.
+# Last modified: ricty_generator.sh on Sun, 19 Jun 2011.
 #
 # Author: Yasunori Yusa <lastname at save dot sys.t.u-tokyo.ac.jp>
 #
@@ -14,6 +14,7 @@
 # * Inconsolata Version 001.010
 # * Migu 1M     Version 20110418
 #                       20110514
+#                       20110610
 #
 # How to use:
 # 1. Install FontForge
@@ -36,10 +37,10 @@
 ########################################
 
 # set version
-ricty_version="3.0.2"
+ricty_version="3.1.0"
 
 # set ascent and descent (parameters concerning line height)
-ricty_ascent="800"
+ricty_ascent="815"
 ricty_descent="215"
 
 # set fonts directories used in auto flag
@@ -73,7 +74,7 @@ _EOT_
 # check fontforge existance
 if [ ! "$(which fontforge)" ]
 then
-    echo "Error: fontforge command not found"
+    echo "Error: fontforge command not found" 1>&2
     exit 1
 fi
 
@@ -197,6 +198,10 @@ Select(0u2193); Clear() # downarrow
 Select(0u2212); Clear() # minus
 Select(0u2423); Clear() # open box
 
+# process for merging
+SelectWorthOutputting()
+ClearInstrs(); UnlinkReference()
+
 # save regular
 Save("${tmpdir}/${modified_inconsolata_regu}")
 Print("Generated ${modified_inconsolata_regu}")
@@ -204,7 +209,6 @@ Print("Generated ${modified_inconsolata_regu}")
 # bold-face regular
 Print("While bold-facing Inconsolata, wait a bit, maybe a bit...")
 SelectWorthOutputting()
-ClearInstrs(); UnlinkReference()
 ExpandStroke(30, 0, 0, 0, 1)
 Select(0u003e); Copy()           # >
 Select(0u003c); Paste(); HFlip() # <
@@ -238,6 +242,7 @@ i = 0; while (i < SizeOf(input_list))
     Print("While scaling " + input_list[i]:t + ", wait a little...")
     ScaleToEm(860, 140)
     SelectWorthOutputting()
+    ClearInstrs(); UnlinkReference()
     SetWidth(-1, 1); Scale(91, 91, 0, 0); SetWidth(110, 2); SetWidth(1, 1)
     Move(23, 0); SetWidth(-23, 1)
     RemoveOverlap(); RoundToInt()
@@ -258,27 +263,28 @@ cat > ${tmpdir}/${ricty_generator} << _EOT_
 Print("Generate Ricty")
 
 # parameters
-inconsolata_list = ["${tmpdir}/${modified_inconsolata_regu}", \\
-                    "${tmpdir}/${modified_inconsolata_bold}"]
-migu1m_list      = ["${tmpdir}/${modified_migu1m_regu}", \\
-                    "${tmpdir}/${modified_migu1m_bold}"]
-fontfamily       = "Ricty"
-fontstyle_list   = ["Regular", "Bold"]
-fontweight_list  = [400,       700]
-copyright        = "Ricty Generator Author: Yasunori Yusa\n" \\
-                 + "Copyright (c) 2006-2011 Raph Levien\n" \\
-                 + "Copyright (c) 2006-2011 itouhiro\n" \\
-                 + "Copyright (c) 2002-2011 M+ FONTS PROJECT\n" \\
-                 + "Copyright (c) 2003-2011 " \\
-                 + "Information-technology Promotion Agency, Japan (IPA)\n" \\
-                 + "Licenses:\n" \\
-                 + "SIL Open Font License Version 1.1 " \\
-                 + "(http://scripts.sil.org/OFL)\n" \\
-                 + "M+ FONTS LICENSE " \\
-                 + "(http://mplus-fonts.sourceforge.jp/mplus-outline-fonts/#license)\n" \\
-                 + "IPA Font License Agreement v1.0 " \\
-                 + "(http://ipafont.ipa.go.jp/ipa_font_license_v1.html)"
-version          = "${ricty_version}"
+inconsolata_list  = ["${tmpdir}/${modified_inconsolata_regu}", \\
+                     "${tmpdir}/${modified_inconsolata_bold}"]
+migu1m_list       = ["${tmpdir}/${modified_migu1m_regu}", \\
+                     "${tmpdir}/${modified_migu1m_bold}"]
+fontfamily        = "Ricty"
+fontstyle_list    = ["Regular", "Bold"]
+fontweight_list   = [400,       700]
+panoseweight_list = [5,         8]
+copyright         = "Ricty Generator Author: Yasunori Yusa\n" \\
+                  + "Copyright (c) 2006-2011 Raph Levien\n" \\
+                  + "Copyright (c) 2006-2011 itouhiro\n" \\
+                  + "Copyright (c) 2002-2011 M+ FONTS PROJECT\n" \\
+                  + "Copyright (c) 2003-2011 " \\
+                  + "Information-technology Promotion Agency, Japan (IPA)\n" \\
+                  + "Licenses:\n" \\
+                  + "SIL Open Font License Version 1.1 " \\
+                  + "(http://scripts.sil.org/OFL)\n" \\
+                  + "M+ FONTS LICENSE " \\
+                  + "(http://mplus-fonts.sourceforge.jp/mplus-outline-fonts/#license)\n" \\
+                  + "IPA Font License Agreement v1.0 " \\
+                  + "(http://ipafont.ipa.go.jp/ipa_font_license_v1.html)"
+version           = "${ricty_version}"
 
 # regular and bold loop
 i = 0; while (i < SizeOf(fontstyle_list))
@@ -298,6 +304,12 @@ i = 0; while (i < SizeOf(fontstyle_list))
     SetOS2Value("FSType",                  0)
     SetOS2Value("VendorID",           "PfEd")
     SetOS2Value("IBMFamily",            2057) # SS Typewriter Gothic
+    SetOS2Value("WinAscentIsOffset",       0)
+    SetOS2Value("WinDescentIsOffset",      0)
+    SetOS2Value("TypoAscentIsOffset",      0)
+    SetOS2Value("TypoDescentIsOffset",     0)
+    SetOS2Value("HHeadAscentIsOffset",     0)
+    SetOS2Value("HHeadDescentIsOffset",    0)
     SetOS2Value("WinAscent",             $ricty_ascent)
     SetOS2Value("WinDescent",            $ricty_descent)
     SetOS2Value("TypoAscent",            860)
@@ -306,13 +318,7 @@ i = 0; while (i < SizeOf(fontstyle_list))
     SetOS2Value("HHeadAscent",           $ricty_ascent)
     SetOS2Value("HHeadDescent",         -$ricty_descent)
     SetOS2Value("HHeadLineGap",            0)
-    SetOS2Value("WinAscentIsOffset",       0)
-    SetOS2Value("WinDescentIsOffset",      0)
-    SetOS2Value("TypoAscentIsOffset",      0)
-    SetOS2Value("TypoDescentIsOffset",     0)
-    SetOS2Value("HHeadAscentIsOffset",     0)
-    SetOS2Value("HHeadDescentIsOffset",    0)
-    SetPanose(3, 9) # Monospaced
+    SetPanose([2, 11, panoseweight_list[i], 9, 2, 2, 3, 2, 2, 7])
     # merge fonts
     Print("While merging " + inconsolata_list[i]:t \\
           + " and " +migu1m_list[i]:t + ", wait a little more...")
