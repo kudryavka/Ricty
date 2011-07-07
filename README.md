@@ -1,0 +1,146 @@
+# プログラミング用フォント Ricty
+Ricty (リクティ) は Linux 環境での研究・開発に適した
+フリーのプログラミング用 TrueType フォントです。
+C、C++、FORTRAN、Python、Perl、Ruby、AWK、シェルスクリプト、
+Makefile、LaTeX など、UNIX 系のコーディングにおける使用を想定しています。
+以下の 2 つの等幅フォントの合成とプログラミング用フォントとしての
+いくつかのチューニングを行う Ricty 生成スクリプトの配布を行なっています。
+
+* [Inconsolata](http://levien.com/type/myfonts/inconsolata.html)
+* [Migu 1M](http://mix-mplus-ipa.sourceforge.jp/)
+
+# ライセンス
+* Ricty が SIL Open Font License Version 1.1 section 5 に
+  違反する解釈ができるとの指摘を受け、万全を期すために
+  Version 3.0.0 より TrueType フォントの配布を中止し、
+  生成スクリプトのみの配布とさせていただいております。
+* Ricty 生成スクリプトは public domain とします。
+  派生物への著作者表示を要求しません。
+  ただし、使用・複製・改変・再配布は自己責任にて行うことをお願いしています。
+* Ricty 生成スクリプトにより生成されたフォントは、
+  [SIL Open Font License (OFL) Version 1.1](http://scripts.sil.org/cms/scripts/page.php?site_id=nrsi&id=ofl)、
+  [M+ FONTS LICENSE](http://mplus-fonts.sourceforge.jp/mplus-outline-fonts/#license)、
+  および、[IPA Font License Agreement v1.0](http://ipafont.ipa.go.jp/ipa_font_license_v1.html) に従うものとします。
+  特に、OFL 1.1 section 5 に従い、生成されたフォントの再配布は禁止とします。
+
+# バージョン
+## Version 3.1.0 (19 June 2011)
+* Mac OS X で Regular と Bold が異なる高さで表示される問題に対処
+
+## Version 3.0.2 (2 June 2011)
+* 生成スクリプトへの auto オプションの追加
+
+## Version 3.0.1 (20 May 2011)
+
+## Version 3.0.0 (17 May 2011)
+* 生成スクリプトの配布開始
+* TrueType フォントの配布中止
+
+# 生成方法
+## FontForge のインストール
+### Debian/Ubuntu
+
+    # apt-get install fontforge
+
+### Fedora
+
+    # yum install fontforge
+
+### その他の Linux
+[FontForge 公式サイト](http://fontforge.sourceforge.net/ja/)より
+入手してください。
+
+## Inconsolata のインストール
+### Debian/Ubuntu
+
+    # apt-get install ttf-inconsolata
+
+### その他の Linux
+[Inconsolata 公式サイト](http://levien.com/type/myfonts/inconsolata.html)より
+OpenType file を入手し、インストールしてください。
+
+## Migu 1M のインストール
+「[M+ と IPA の合成フォント](http://mix-mplus-ipa.sourceforge.jp/)」より入手し、
+インストールしてください (MigMix ではありません)。
+
+## Ricty の生成
+
+    % sh ricty_generator.sh auto
+
+もしくは、
+
+    % sh ricty_generator.sh Inconsolata.otf Migu-1M-regular.ttf Migu-1M-bold.ttf
+
+生成には 2–5 分程の時間がかかります。
+
+## Ricty のインストール
+
+    % cp Ricty-{Regular,Bold}.ttf ~/.fonts/
+    % fc-cache -vf
+
+## (おまけ) `ricty_generator.sh` のコマンドラインオプション
+### `-h`
+ヘルプを閲覧する。
+### `-f /path/to/fontforge`
+fontforge コマンドへのパスを指定する。
+### `-v`
+すべてのエラー・警告メッセージを標準出力に表示する。
+### `-l`
+生成の過程で生じる中間ファイルを削除せずに残す。
+### `-n string`
+フォント名を「Ricty」から「Ricty ○○○」に変更する。
+### `-w`
+行間を広くする。
+### `-W`
+`-w` よりもさらに行間を広くする。
+### `-z`
+全角スペースを可視化しない。
+
+# 派生フォント Ricty Discord
+Ricty では、調和・統一感の維持のため、プログラミング用フォントのコアである
+Inconsolata 由来の ASCII 文字に手を入れないようにしています。
+Discord (不協和音) 版は、統一感を乱す覚悟で ASCII 文字に手を入れた
+Ricty の派生フォントです。
+通常、Ricty Discord は Ricty 生成の際に自動的に生成されますが、
+パッチスクリプトを直接実行することによっても生成できます。
+
+    % fontforge -script ricty_discord_patch.pe Ricty-Regular.ttf
+    % fontforge -script ricty_discord_patch.pe Ricty-Bold.ttf
+
+# 既知の問題
+* Mac OS X を含む一部の環境において、生成スクリプトを実行すると
+  FontForge が segmentation fault で異常終了することがあります。
+  * 「[Ricty のビルド中に fontforge が segmentation fault でクラッシュする問題](http://d.hatena.ne.jp/eagletmt/20110602/1306964018)」にて
+    これを回避したとの報告がありました。
+  * `--enable-double` を抜いた homebrew formula でビルドした
+    fontforge での生成成功を確認しています。
+* Windows ではアンチエイリアスがキレイにかからず、
+  特にフォントサイズが小さいときに文字が部分的に欠けます。
+  * [gdipp](http://code.google.com/p/gdipp/)、
+    [ezgdi](http://code.google.com/p/ezgdi/)、
+    [gdi++ Helium](http://www18.atwiki.jp/gdiplus2/pages/46.html) などを
+    使用すると Linux と同等の美しさで表示されます
+    (アプリケーションによってまったく機能しないことがあります)。
+* 一部のフォントサイズで半角文字と全角文字の横幅比が
+  1:2 にならないことがあります。
+  * ピクセル値 (px) が偶数でないとき、どのフォントにおいても起こりうる問題です。
+  * 一般的な 96 DPI のフォントレンダリングでは、
+    9 pt、10.5 pt、12 pt、13.5 pt、15 pt など、
+    1.5 の倍数を指定すると 1:2 で表示されると思います。
+* 一般的なフォントと比較すると相対的にフォントサイズ (横幅) が小さくなります。
+  * 横幅は和文フォントに合わせてあるので、
+    一般的な Courier 互換メトリックの欧文フォントと比較すると
+    83 % 程度の大きさになります。
+  * また、アルファベットとのバランスをとるために日本語文字を
+    91 % に縮小しています (その分文字間隔が広くなっています)。
+
+# メモ
+* `ricty_generator.sh` に Migu 1 以外の日本語フォントを食べさせても
+  大抵はうまく合成されます。
+  ボールド体がない日本語フォントでも、
+  ダミーを食べさせて Ricty-Bold を破棄すれば問題ありません。
+* `ricty_discord_patch.pe` は好みで適宜コメントアウトして
+  使われることを想定しています。
+* Cocoa Emacs でフレーム幅が意図した幅の倍になってしまうときは、
+  本末転倒気味ですが、`ricty_ascii_extractor.pe` で
+  ASCII 文字のみを分離したフォントを生成する方法が有効です。
