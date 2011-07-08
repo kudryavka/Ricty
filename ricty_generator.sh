@@ -1,9 +1,9 @@
 #!/bin/sh
 
 ########################################
-# Ricty Generator 3.2.0b
+# Ricty Generator 3.1.1
 #
-# Last modified: ricty_generator.sh on Thu, 07 Jul 2011.
+# Last modified: ricty_generator.sh on Fri, 08 Jul 2011.
 #
 # Author: Yasunori Yusa <lastname at save dot sys.t.u-tokyo.ac.jp>
 #
@@ -37,7 +37,7 @@
 ########################################
 
 # set version
-ricty_version="3.2.0b"
+ricty_version="3.1.1"
 
 # set familyname
 ricty_familyname="Ricty"
@@ -87,8 +87,9 @@ ricty_generator_help()
     echo ""
     echo "Options:"
     echo "  -h                     Display this infomation"
+    echo "  -V                     Display version number"
     echo "  -f /path/to/fontforge  Set path to fontforge command"
-    echo "  -v                     Enable verbose mode (print all error/warning messages)"
+    echo "  -v                     Enable verbose mode (display fontforge's warnings)"
     echo "  -l                     Leave (NOT remove) temporary files"
     echo "  -n string              Set additional fontfamily name (\`\`Ricty HERE'')"
     echo "  -w                     Widen line space"
@@ -101,11 +102,14 @@ ricty_generator_help()
 verbose_mode_flag="false"
 leaving_tmp_flag="false"
 invisible_zspace_flag="false"
-while getopts hf:vln:wWz OPT
+while getopts hVf:vln:wWz OPT
 do
     case $OPT in
         "h" )
             ricty_generator_help
+            ;;
+        "V" )
+            exit 0
             ;;
         "f" )
             echo "Option: Set path to fontforge command: $OPTARG"
