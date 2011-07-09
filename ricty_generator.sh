@@ -1,9 +1,9 @@
 #!/bin/sh
 
 ########################################
-# Ricty Generator 3.1.1
+# Ricty Generator 3.1.2b
 #
-# Last modified: ricty_generator.sh on Fri, 08 Jul 2011.
+# Last modified: ricty_generator.sh on Sat, 10 Jul 2011.
 #
 # Author: Yasunori Yusa <lastname at save dot sys.t.u-tokyo.ac.jp>
 #
@@ -37,7 +37,7 @@
 ########################################
 
 # set version
-ricty_version="3.1.1"
+ricty_version="3.1.2b"
 
 # set familyname
 ricty_familyname="Ricty"
@@ -94,15 +94,17 @@ ricty_generator_help()
     echo "  -n string              Set additional fontfamily name (\`\`Ricty HERE'')"
     echo "  -w                     Widen line space"
     echo "  -W                     Widen line space extremely"
-    echo "  -z                     NOT visualize zenkaku space"
+    echo "  -z                     Disable visible zenkaku space"
+    echo "  -a                     Disable fullwidth ambiguous charactors"
     exit 0
 }
 
 # get options
 verbose_mode_flag="false"
 leaving_tmp_flag="false"
-invisible_zspace_flag="false"
-while getopts hVf:vln:wWz OPT
+zenkaku_space_flag="true"
+fullwidth_ambiguous_flag="true"
+while getopts hVf:vln:wWza OPT
 do
     case $OPT in
         "h" )
@@ -138,8 +140,12 @@ do
             ricty_descent=`expr $ricty_descent + 64`
             ;;
         "z" )
-            echo "Option: NOT visualize zenkaku space"
-            invisible_zspace_flag="true"
+            echo "Option: Disable visible zenkaku space"
+            zenkaku_space_flag="false"
+            ;;
+        "a" )
+            echo "Option: Disable fullwidth ambiguous charactors"
+            fullwidth_ambiguous_flag="false"
             ;;
         *   )
             exit 1
@@ -253,32 +259,34 @@ Open("${input_inconsolata}")
 ScaleToEm(860, 140)
 
 # remove ambiguous
-Select(0u00a2); Clear() # cent
-Select(0u00a3); Clear() # pound
-Select(0u00a4); Clear() # currency
-Select(0u00a5); Clear() # yen
-Select(0u00a7); Clear() # section
-Select(0u00a8); Clear() # dieresis
-Select(0u00ac); Clear() # not
-Select(0u00ad); Clear() # soft hyphen
-Select(0u00b0); Clear() # degree
-Select(0u00b1); Clear() # plus-minus
-Select(0u00b4); Clear() # acute
-Select(0u00b6); Clear() # pilcrow
-Select(0u00d7); Clear() # multiply
-Select(0u00f7); Clear() # divide
-Select(0u2018); Clear() # left '
-Select(0u2019); Clear() # right '
-Select(0u201c); Clear() # left "
-Select(0u201d); Clear() # right "
-Select(0u2020); Clear() # dagger
-Select(0u2021); Clear() # double dagger
-Select(0u2026); Clear() # ...
-Select(0u2122); Clear() # TM
-Select(0u2191); Clear() # uparrow
-Select(0u2193); Clear() # downarrow
-Select(0u2212); Clear() # minus
-Select(0u2423); Clear() # open box
+if ("$fullwidth_ambiguous_flag" == "true")
+    Select(0u00a2); Clear() # cent
+    Select(0u00a3); Clear() # pound
+    Select(0u00a4); Clear() # currency
+    Select(0u00a5); Clear() # yen
+    Select(0u00a7); Clear() # section
+    Select(0u00a8); Clear() # dieresis
+    Select(0u00ac); Clear() # not
+    Select(0u00ad); Clear() # soft hyphen
+    Select(0u00b0); Clear() # degree
+    Select(0u00b1); Clear() # plus-minus
+    Select(0u00b4); Clear() # acute
+    Select(0u00b6); Clear() # pilcrow
+    Select(0u00d7); Clear() # multiply
+    Select(0u00f7); Clear() # divide
+    Select(0u2018); Clear() # left '
+    Select(0u2019); Clear() # right '
+    Select(0u201c); Clear() # left "
+    Select(0u201d); Clear() # right "
+    Select(0u2020); Clear() # dagger
+    Select(0u2021); Clear() # double dagger
+    Select(0u2026); Clear() # ...
+    Select(0u2122); Clear() # TM
+    Select(0u2191); Clear() # uparrow
+    Select(0u2193); Clear() # downarrow
+    Select(0u2212); Clear() # minus
+    Select(0u2423); Clear() # open box
+endif
 
 # process for merging
 SelectWorthOutputting()
@@ -420,7 +428,7 @@ i = 0; while (i < SizeOf(fontstyle_list))
     MergeFonts(inconsolata_list[i])
     MergeFonts(migu1m_list[i])
     # edit zenkaku space (from ballot box and heavy greek cross)
-    if ("$invisible_zspace_flag" == "false")
+    if ("$zenkaku_space_flag" == "true")
         Select(0u2610); Copy(); Select(0u3000); Paste()
         Select(0u271a); Copy(); Select(0u3000); PasteInto(); OverlapIntersect()
     endif
