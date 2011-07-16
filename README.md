@@ -101,7 +101,7 @@ fontforge の警告メッセージを表示する。
 ### `-z`
 全角スペースを可視化しない。
 ### `-a`
-Ambiguous 文字を全角化しない。
+Inconsolata のグリフを優先し、Ambiguous 文字を全角化しない。
 
 # 派生フォント Ricty Discord
 Ricty では、調和・統一感の維持のため、プログラミング用フォントのコアである
@@ -119,8 +119,13 @@ Ricty の派生フォントです。
   FontForge が segmentation fault で異常終了することがあります。
   * 「[Ricty のビルド中に fontforge が segmentation fault でクラッシュする問題](http://d.hatena.ne.jp/eagletmt/20110602/1306964018)」にて
     これを回避したとの報告がありました。
-  * `--enable-double` を抜いた homebrew formula でビルドした
-    fontforge での生成成功を確認しています。
+  * また、一部のバージョンの FontForge にはファイル名を誤認識するという
+    バグがあるようです。`-v` オプションで誤認識後のファイル名を確認し、
+    ファイル名を変更することで対応してください。
+* 一部の環境において、生成されたフォントの全角文字の文字間隔が不自然に
+  大きくなることがあります。
+  * 生成されたフォントを `misc/os2version_reviser.sh` に食べさせることで
+    修正できます。
 * Windows ではアンチエイリアスがキレイにかからず、
   特にフォントサイズが小さいときに文字が部分的に欠けます。
   * [gdipp](http://code.google.com/p/gdipp/)、
@@ -149,5 +154,5 @@ Ricty の派生フォントです。
 * `ricty_discord_patch.pe` は好みで適宜コメントアウトして
   使われることを想定しています。
 * Cocoa Emacs でフレーム幅が意図した幅の倍になってしまうときは、
-  本末転倒気味ですが、`ricty_ascii_extractor.pe` で
+  本末転倒気味ですが、`misc/ricty_ascii_extractor.pe` で
   ASCII 文字のみを分離したフォントを生成する方法が有効です。
