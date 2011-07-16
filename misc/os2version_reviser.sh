@@ -7,8 +7,12 @@
 #
 # Author: Yasunori Yusa <lastname at save dot sys.t.u-tokyo.ac.jp>
 #
+# This script is for revising OS/2 Version of Ricty.
+# If the spaces between fullwidth charcters are unusually large,
+# you can use this script and revise it.
+#
 # How to use:
-# % sh os2version_reviser.sh filename1.ttf filename2.ttf ...
+# % sh os2version_reviser.sh Ricty-*.ttf RictyDiscord-*.ttf
 ########################################
 
 # parameters
@@ -18,16 +22,16 @@ os2_version="1"
 # usage
 if [ $# -eq 0 ]
 then
-    echo "Usage: os2version_reviser.sh <filename.ttf>..."
+    echo "Usage: os2version_reviser.sh filename.ttf ..."
     exit 0
 fi
 
 # make tmp
 if [ -w "/tmp" ]
 then
-    tmpdir=`mktemp -d /tmp/os2version_reviser_tmpdir.XXXXXX` || exit 2
+    tmpdir=`mktemp -d /tmp/os2version_reviser_tmpdir.XXXXXX`
 else
-    tmpdir=`mktemp -d ./os2version_reviser_tmpdir.XXXXXX`    || exit 2
+    tmpdir=`mktemp -d ./os2version_reviser_tmpdir.XXXXXX`
 fi
 
 # remove tmp by trapping

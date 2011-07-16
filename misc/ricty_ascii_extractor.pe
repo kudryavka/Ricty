@@ -7,28 +7,24 @@
 #
 # Author: Yasunori Yusa <lastname at save dot sys.t.u-tokyo.ac.jp>
 #
-# This script is for generating ``Ricty Discord'' from Ricty. Owing to SIL
-# Open Font License Version 1.1 section 5, it is PROHIBITED to distribute
-# the generated font.
+# This script is for extracting ASCII charactors from Ricty.
+# If the window width of Cocoa Emacs is twice larger than you expect,
+# you can use this script and write configuration file as following.
 #
-# How to use:
-# % fontforge -script ricty_ascii_extractor.pe Ricty-Regular.ttf
-# % fontforge -script ricty_ascii_extractor.pe Ricty-Bold.ttf
-# % fontforge -script ricty_ascii_extractor.pe RictyDiscord-Regular.ttf
-# % fontforge -script ricty_ascii_extractor.pe RictyDiscord-Bold.ttf
-#
-# # Cocoa Emacs configuration sample
 # (set-face-attribute 'default nil
 #                     :family "Ricty Discord Ascii"
 #                     :height 140)
 # (set-fontset-font (frame-parameter nil 'font)
 #                   'japanese-jisx0208
 #                   '("Ricty Discord" . "iso10646-1"))
+#
+# How to use:
+# % fontforge -script ricty_ascii_extractor.pe RictyDiscord-*.ttf
 ########################################
 
 # check args
 if ($argc == 1)
-    Print("Usage: ricty_ascii_extractor.pe fontfamily-fontstyle.ttf")
+    Print("Usage: ricty_ascii_extractor.pe fontfamily-fontstyle.ttf ...")
     Quit()
 endif
 
