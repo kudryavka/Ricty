@@ -3,7 +3,7 @@
 ########################################
 # Ricty Generator 3.1.2b
 #
-# Last modified: ricty_generator.sh on Sat, 10 Jul 2011.
+# Last modified: ricty_generator.sh on Sat, 16 Jul 2011.
 #
 # Author: Yasunori Yusa <lastname at save dot sys.t.u-tokyo.ac.jp>
 #
@@ -237,8 +237,8 @@ then
     trap "if [ -d $tmpdir ]; then echo 'Remove temporary files'; rm -rf $tmpdir; echo 'Abnormal terminated'; fi; exit 3" HUP INT QUIT
     trap "if [ -d $tmpdir ]; then echo 'Remove temporary files'; rm -rf $tmpdir; echo 'Abnormal terminated'; fi" EXIT
 else
-    trap "if [ -d $tmpdir ]; echo 'Abnormal terminated'; fi; exit 3" HUP INT QUIT
-    trap "if [ -d $tmpdir ]; echo 'Abnormal terminated'; fi" EXIT
+    trap "if [ -d $tmpdir ]; then echo 'Abnormal terminated'; fi; exit 3" HUP INT QUIT
+    trap "if [ -d $tmpdir ]; then echo 'Abnormal terminated'; fi" EXIT
 fi
 
 ########################################
