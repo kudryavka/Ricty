@@ -3,7 +3,7 @@
 ########################################
 # OS/2 Version Reviser
 #
-# Last modified: os2version_reviser.sh on Sat, 16 Jul 2011.
+# Last modified: os2version_reviser.sh on Mon, 15 Aug 2011.
 #
 # Author: Yasunori Yusa <lastname at save dot sys.t.u-tokyo.ac.jp>
 #
@@ -53,7 +53,7 @@ Generate("${filename}", "", 0x84)
 _EOT_
     # convert file
     $fontforge_cmd -script ${tmpdir}/ttf2sfd.pe 2> /dev/null
-    sed -e "s/^OS2Version: .\+$/OS2Version: ${os2_version}/" \
+    sed -e "s/^OS2Version: .*$/OS2Version: ${os2_version}/" \
         ${tmpdir}/tmpsfd.sfd > ${tmpdir}/tmpsfd2.sfd
     mv -f $filename $filename.bak
     $fontforge_cmd -script ${tmpdir}/sfd2ttf.pe 2> /dev/null
