@@ -3,7 +3,7 @@
 ########################################
 # Ricty Generator 3.1.2b
 #
-# Last modified: ricty_generator.sh on Sat, 16 Jul 2011.
+# Last modified: ricty_generator.sh on Sat, 27 Aug 2011.
 #
 # Author: Yasunori Yusa <lastname at save dot sys.t.u-tokyo.ac.jp>
 #
@@ -15,6 +15,7 @@
 # * Migu 1M     Version 20110418
 #                       20110514
 #                       20110610
+#                       20110825
 #
 # How to use:
 # 1. Install FontForge
