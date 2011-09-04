@@ -1,9 +1,7 @@
 #!/usr/local/bin/fontforge -script
 
-########################################
-# Ricty ASCII Extractor
 #
-# Last modified: ricty_ascii_extractor.pe on Wed, 06 Jul 2011.
+# Ricty ASCII Extractor
 #
 # Author: Yasunori Yusa <lastname at save dot sys.t.u-tokyo.ac.jp>
 #
@@ -20,7 +18,7 @@
 #
 # How to use:
 # % fontforge -script ricty_ascii_extractor.pe RictyDiscord-*.ttf
-########################################
+#
 
 # check args
 if ($argc == 1)

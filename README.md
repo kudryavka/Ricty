@@ -102,6 +102,8 @@ fontforge の警告メッセージを表示する。
 全角スペースを可視化しない。
 ### `-a`
 Inconsolata のグリフを優先し、Ambiguous 文字を全角化しない。
+### `-s`
+Migu 1M のグリフを縮小しない (`-w` オプションとの併用を推奨)。
 
 # 派生フォント Ricty Discord
 Ricty では、調和・統一感の維持のため、プログラミング用フォントのコアである
@@ -156,3 +158,6 @@ Ricty の派生フォントです。
 * Cocoa Emacs でフレーム幅が意図した幅の倍になってしまうときは、
   本末転倒気味ですが、`misc/ricty_ascii_extractor.pe` で
   ASCII 文字のみを分離したフォントを生成する方法が有効です。
+
+# 作者連絡先
+[遊佐泰紀 (Yasunori Yusa)](http://save.sys.t.u-tokyo.ac.jp/~yusa/index_ja.html)

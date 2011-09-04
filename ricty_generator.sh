@@ -1,9 +1,7 @@
 #!/bin/sh
 
-########################################
-# Ricty Generator 3.1.2b
 #
-# Last modified: ricty_generator.sh on Sat, 27 Aug 2011.
+# Ricty Generator 3.1.2b
 #
 # Author: Yasunori Yusa <lastname at save dot sys.t.u-tokyo.ac.jp>
 #
@@ -35,7 +33,7 @@
 # 5. Install Ricty
 #    % cp Ricty-{Regular,Bold}.ttf ~/.fonts/
 #    % fc-cache -vf
-########################################
+#
 
 # set version
 ricty_version="3.1.2b"
@@ -97,6 +95,7 @@ ricty_generator_help()
     echo "  -W                     Widen line space extremely"
     echo "  -z                     Disable visible zenkaku space"
     echo "  -a                     Disable fullwidth ambiguous charactors"
+    echo "  -s                     Disable scaling down Migu 1M"
     exit 0
 }
 
@@ -105,7 +104,8 @@ verbose_mode_flag="false"
 leaving_tmp_flag="false"
 zenkaku_space_flag="true"
 fullwidth_ambiguous_flag="true"
-while getopts hVf:vln:wWza OPT
+scaling_down_flag="true"
+while getopts hVf:vln:wWzas OPT
 do
     case $OPT in
         "h" )
@@ -147,6 +147,10 @@ do
         "a" )
             echo "Option: Disable fullwidth ambiguous charactors"
             fullwidth_ambiguous_flag="false"
+            ;;
+        "s" )
+            echo "Option: Disable scaling down Migu 1M"
+            scaling_down_flag="false"
             ;;
         *   )
             exit 1
@@ -332,12 +336,14 @@ i = 0; while (i < SizeOf(input_list))
     Print("Open " + input_list[i])
     Open(input_list[i])
     # scale Migu 1M
-    Print("While scaling " + input_list[i]:t + ", wait a little...")
     ScaleToEm(860, 140)
     SelectWorthOutputting()
     ClearInstrs(); UnlinkReference()
-    SetWidth(-1, 1); Scale(91, 91, 0, 0); SetWidth(110, 2); SetWidth(1, 1)
-    Move(23, 0); SetWidth(-23, 1)
+    if ("$scaling_down_flag" == "true")
+        Print("While scaling " + input_list[i]:t + ", wait a little...")
+        SetWidth(-1, 1); Scale(91, 91, 0, 0); SetWidth(110, 2); SetWidth(1, 1)
+        Move(23, 0); SetWidth(-23, 1)
+    endif
     RoundToInt(); RemoveOverlap(); RoundToInt()
     # save
     Save("${tmpdir}/" + output_list[i])

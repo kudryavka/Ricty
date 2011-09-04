@@ -1,9 +1,7 @@
 #!/bin/sh
 
-########################################
-# OS/2 Version Reviser
 #
-# Last modified: os2version_reviser.sh on Mon, 15 Aug 2011.
+# OS/2 Version Reviser
 #
 # Author: Yasunori Yusa <lastname at save dot sys.t.u-tokyo.ac.jp>
 #
@@ -13,7 +11,7 @@
 #
 # How to use:
 # % sh os2version_reviser.sh Ricty-*.ttf RictyDiscord-*.ttf
-########################################
+#
 
 # parameters
 fontforge_cmd="fontforge"

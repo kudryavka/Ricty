@@ -1,9 +1,7 @@
 #!/usr/local/bin/fontforge -script
 
-########################################
-# Ricty Discord Patch for Ricty 3.1.2b
 #
-# Last modified: ricty_discord_patch.pe on Wed, 10 Jul 2011.
+# Ricty Discord Patch for Ricty 3.1.2b
 #
 # Author: Yasunori Yusa <lastname at save dot sys.t.u-tokyo.ac.jp>
 #
@@ -14,7 +12,7 @@
 # How to use:
 # % fontforge -script ricty_discord_patch.pe Ricty-Regular.ttf
 # % fontforge -script ricty_discord_patch.pe Ricty-Bold.ttf
-########################################
+#
 
 # check args
 if ($argc == 1)
