@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #
-# Ricty Generator 3.1.2b
+# Ricty Generator 3.1.2
 #
 # Author: Yasunori Yusa <lastname at save dot sys.t.u-tokyo.ac.jp>
 #
@@ -10,10 +10,7 @@
 # Version 1.1 section 5, it is PROHIBITED to distribute the generated font.
 # This script supports following versions of inputting fonts.
 # * Inconsolata Version 001.010
-# * Migu 1M     Version 20110418
-#                       20110514
-#                       20110610
-#                       20110825
+# * Migu 1M     Version 20111002
 #
 # How to use:
 # 1. Install FontForge
@@ -23,13 +20,13 @@
 # 2. Get Inconsolata.otf
 #    Debian/Ubuntu: # apt-get install ttf-inconsolata
 #    Other Linux:   Get from http://levien.com/type/myfonts/inconsolata.html
-# 3. Get Migu-1M-regular/bold.ttf
+# 3. Get migu-1m-regular/bold.ttf
 #                   Get from http://mix-mplus-ipa.sourceforge.jp/
 # 4. Run this script
 #    % sh ricty_generator.sh auto
 #    or
 #    % sh ricty_generator.sh \
-#      Inconsolata.otf Migu-1M-regular.ttf Migu-1M-bold.ttf
+#      Inconsolata.otf migu-1m-regular.ttf migu-1m-bold.ttf
 # 5. Install Ricty
 #    % cp Ricty-{Regular,Bold}.ttf ~/.fonts/
 #    % fc-cache -vf
@@ -57,8 +54,8 @@ modified_inconsolata_generator="modified_inconsolata_generator.pe"
 modified_inconsolata_regu="Modified-Inconsolata-Regular.sfd"
 modified_inconsolata_bold="Modified-Inconsolata-Bold.sfd"
 modified_migu1m_generator="modified_migu1m_generator.pe"
-modified_migu1m_regu="Modified-Migu-1M-regular.sfd"
-modified_migu1m_bold="Modified-Migu-1M-bold.sfd"
+modified_migu1m_regu="Modified-migu-1m-regular.sfd"
+modified_migu1m_bold="Modified-migu-1m-bold.sfd"
 ricty_generator="ricty_generator.pe"
 
 ########################################
@@ -82,7 +79,7 @@ ricty_generator_help()
 {
     echo "Usage: ricty_generator.sh [options] auto"
     echo "       ricty_generator.sh [options]" \
-        "Inconsolata.otf Migu-1M-regular.ttf Migu-1M-bold.ttf"
+        "Inconsolata.otf migu-1m-regular.ttf migu-1m-bold.ttf"
     echo ""
     echo "Options:"
     echo "  -h                     Display this infomation"
@@ -184,11 +181,11 @@ then
         exit 1
     fi
     # search Migu 1M
-    input_migu1m_regu=`find $fonts_dirs -follow -name Migu-1M-regular.ttf | head -n 1`
-    input_migu1m_bold=`find $fonts_dirs -follow -name Migu-1M-bold.ttf    | head -n 1`
+    input_migu1m_regu=`find $fonts_dirs -follow -name migu-1m-regular.ttf | head -n 1`
+    input_migu1m_bold=`find $fonts_dirs -follow -name migu-1m-bold.ttf    | head -n 1`
     if [ ! "$input_migu1m_regu" -o ! "$input_migu1m_bold" ]
     then
-        echo "Error: Migu-1M-regular/bold.ttf not found" 1>&2
+        echo "Error: migu-1m-regular/bold.ttf not found" 1>&2
         exit 1
     fi
 elif [ $# -eq 3 ]
@@ -216,11 +213,11 @@ then
     then
         echo "Warning: $input_inconsolata is really Inconsolata?" 1>&2
     fi
-    if [ "$(basename $input_migu1m_regu)" != "Migu-1M-regular.ttf" ]
+    if [ "$(basename $input_migu1m_regu)" != "migu-1m-regular.ttf" ]
     then
         echo "Warning: $input_migu1m_regu is really Migu 1M Regular?" 1>&2
     fi
-    if [ "$(basename $input_migu1m_bold)" != "Migu-1M-bold.ttf" ]
+    if [ "$(basename $input_migu1m_bold)" != "migu-1m-bold.ttf" ]
     then
         echo "Warning: $input_migu1m_bold is really Migu 1M Bold?" 1>&2
     fi

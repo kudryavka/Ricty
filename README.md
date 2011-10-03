@@ -24,6 +24,10 @@ Makefile、LaTeX など、UNIX 系のコーディングにおける使用を想�
   特に、OFL 1.1 section 5 に従い、生成されたフォントの再配布は禁止とします。
 
 # バージョン
+## Version 3.1.2 (3 Sep. 2011)
+* Migu 20111002 に同期 (後方互換を担保せず)
+* コマンドラインオプションの追加
+
 ## Version 3.1.1 (8 July 2011)
 * コマンドラインオプションの追加
 
@@ -72,7 +76,7 @@ OpenType file を入手し、インストールしてください。
 
 もしくは、
 
-    % sh ricty_generator.sh Inconsolata.otf Migu-1M-regular.ttf Migu-1M-bold.ttf
+    % sh ricty_generator.sh Inconsolata.otf migu-1m-regular.ttf migu-1m-bold.ttf
 
 生成には 2–5 分程の時間がかかります。
 
