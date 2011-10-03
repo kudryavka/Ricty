@@ -33,7 +33,7 @@
 #
 
 # set version
-ricty_version="3.1.2b"
+ricty_version="3.1.2"
 
 # set familyname
 ricty_familyname="Ricty"
