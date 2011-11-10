@@ -1,7 +1,7 @@
 #!/bin/sh
 
 #
-# Ricty Generator 3.1.2
+# Ricty Generator 3.1.3b
 #
 # Author: Yasunori Yusa <lastname at save dot sys.t.u-tokyo.ac.jp>
 #
@@ -33,7 +33,7 @@
 #
 
 # set version
-ricty_version="3.1.2"
+ricty_version="3.1.3b"
 
 # set familyname
 ricty_familyname="Ricty"
@@ -112,7 +112,7 @@ do
             exit 0
             ;;
         "f" )
-            echo "Option: Set path to fontforge command: $OPTARG"
+            echo "Option: Set path to fontforge command: ${OPTARG}"
             fontforge_cmd="$OPTARG"
             ;;
         "v" )
@@ -124,7 +124,7 @@ do
             leaving_tmp_flag="true"
             ;;
         "n" )
-            echo "Option: Set additional fontfamily name: $OPTARG"
+            echo "Option: Set additional fontfamily name: ${OPTARG}"
             ricty_addfamilyname=`echo $OPTARG | sed -e 's/ //g'`
             ;;
         "w" )
@@ -157,9 +157,10 @@ done
 shift `expr $OPTIND - 1`
 
 # check fontforge existance
-if [ ! "$(which $fontforge_cmd 2> /dev/null)" ]
+which $fontforge_cmd > /dev/null 2>&1
+if [ $? -ne 0 ]
 then
-    echo "Error: $fontforge_cmd command not found" 1>&2
+    echo "Error: ${fontforge_cmd} command not found" >&2
     exit 1
 fi
 
@@ -170,22 +171,22 @@ then
     tmp=""
     for i in $fonts_dirs
     do
-        if [ -d $i ]; then tmp="$tmp $i"; fi
+        [ -d $i ] && tmp="$tmp $i"
     done
     fonts_dirs=$tmp
     # search Inconsolata
     input_inconsolata=`find $fonts_dirs -follow -name Inconsolata.otf | head -n 1`
     if [ ! "$input_inconsolata" ]
     then
-        echo "Error: Inconsolata.otf not found" 1>&2
+        echo "Error: Inconsolata.otf not found" >&2
         exit 1
     fi
     # search Migu 1M
-    input_migu1m_regu=`find $fonts_dirs -follow -name migu-1m-regular.ttf | head -n 1`
-    input_migu1m_bold=`find $fonts_dirs -follow -name migu-1m-bold.ttf    | head -n 1`
+    input_migu1m_regu=`find $fonts_dirs -follow -iname migu-1m-regular.ttf | head -n 1`
+    input_migu1m_bold=`find $fonts_dirs -follow -iname migu-1m-bold.ttf    | head -n 1`
     if [ ! "$input_migu1m_regu" -o ! "$input_migu1m_bold" ]
     then
-        echo "Error: migu-1m-regular/bold.ttf not found" 1>&2
+        echo "Error: migu-1m-regular/bold.ttf not found" >&2
         exit 1
     fi
 elif [ $# -eq 3 ]
@@ -197,30 +198,24 @@ then
     # check file existance
     if [ ! -r $input_inconsolata ]
     then
-        echo "Error: $input_inconsolata not found" 1>&2
+        echo "Error: ${input_inconsolata} not found" >&2
         exit 1
     elif [ ! -r $input_migu1m_regu ]
     then
-        echo "Error: $input_migu1m_regu not found" 1>&2
+        echo "Error: ${input_migu1m_regu} not found" >&2
         exit 1
     elif [ ! -r $input_migu1m_bold ]
     then
-        echo "Error: $input_migu1m_bold not found" 1>&2
+        echo "Error: ${input_migu1m_bold} not found" >&2
         exit 1
     fi
     # check filename
-    if [ "$(basename $input_inconsolata)" != "Inconsolata.otf" ]
-    then
-        echo "Warning: $input_inconsolata is really Inconsolata?" 1>&2
-    fi
-    if [ "$(basename $input_migu1m_regu)" != "migu-1m-regular.ttf" ]
-    then
-        echo "Warning: $input_migu1m_regu is really Migu 1M Regular?" 1>&2
-    fi
-    if [ "$(basename $input_migu1m_bold)" != "migu-1m-bold.ttf" ]
-    then
-        echo "Warning: $input_migu1m_bold is really Migu 1M Bold?" 1>&2
-    fi
+    [ "$(basename $input_inconsolata)" != "Inconsolata.otf" ] \
+        && echo "Warning: ${input_inconsolata} is really Inconsolata?" >&2
+    [ "$(basename $input_migu1m_regu)" != "migu-1m-regular.ttf" ] \
+        && echo "Warning: ${input_migu1m_regu} is really Migu 1M Regular?" >&2
+    [ "$(basename $input_migu1m_bold)" != "migu-1m-bold.ttf" ] \
+        && echo "Warning: ${input_migu1m_bold} is really Migu 1M Bold?" >&2
 else
     ricty_generator_help
 fi

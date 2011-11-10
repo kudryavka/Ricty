@@ -1,7 +1,7 @@
 #!/usr/local/bin/fontforge -script
 
 #
-# Ricty Discord Patch for Ricty 3.1.2
+# Ricty Discord Patch for Ricty 3.1.3b
 #
 # Author: Yasunori Yusa <lastname at save dot sys.t.u-tokyo.ac.jp>
 #
@@ -16,7 +16,7 @@
 
 # check args
 if ($argc == 1)
-    Print("Usage: ricty_discord_patch.pe fontfamily-fontstyle.ttf")
+    Print("Usage: ricty_discord_patch.pe fontfamily-fontstyle.ttf ...")
     Quit()
 endif
 
@@ -32,14 +32,14 @@ while (i < $argc)
 input_ttf  = $argv[i]
 input      = input_ttf:t:r
 if (input_ttf:t:e != "ttf")
-    Print("Usage: ricty_discord_patch.pe fontfamily-fontstyle.ttf")
+    Print("Usage: ricty_discord_patch.pe fontfamily-fontstyle.ttf ...")
     Quit()
 endif
 
 # get font names
 hyphen_idx = Strrstr(input, '-')
 if (hyphen_idx == -1)
-    Print("Usage: ricty_discord_patch.pe fontfamily-fontstyle.ttf")
+    Print("Usage: ricty_discord_patch.pe fontfamily-fontstyle.ttf ...")
     Quit()
 endif
 inputfamily = Strsub(input, 0, hyphen_idx)
