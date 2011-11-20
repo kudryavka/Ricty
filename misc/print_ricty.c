@@ -1,11 +1,10 @@
-/* -*- C -*- */
 #include <stdio.h>
 #include <string.h>
 
 /**
  * プログラミング用フォント Ricty で C を書く
  *
- * - GNU Emacs 23 on Ubuntu
+ * - 環境は GNU Emacs 23 on Ubuntu
  * - Emacs のカラーテーマは Lethe (一部改変)
  * - 予約語、コメント、文字列などはボールドフェース
  */
@@ -41,6 +40,5 @@ int main(int argc, char *argv[])
     /* Ricty で手を入れたグリフ */
     printf("　，．：；–―\n");
 
-    /* return */
     return 0;
 }
