@@ -328,7 +328,7 @@ Print("Generate modified Migu 1M")
 input_list  = ["${input_migu1m_regu}",    "${input_migu1m_bold}"]
 output_list = ["${modified_migu1m_regu}", "${modified_migu1m_bold}"]
 
-# regular and bold loop
+# begin loop of regular and bold
 i = 0; while (i < SizeOf(input_list))
     # open Migu 1M
     Print("Open " + input_list[i])
@@ -386,7 +386,7 @@ copyright         = "Ricty Generator Author: Yasunori Yusa\n" \\
                   + "(http://ipafont.ipa.go.jp/ipa_font_license_v1.html)"
 version           = "${ricty_version}"
 
-# regular and bold loop
+# begin loop of regular and bold
 i = 0; while (i < SizeOf(fontstyle_list))
     # open new file
     New()
