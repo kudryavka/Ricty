@@ -1,7 +1,8 @@
 #!/bin/sh
 
 #
-# Ricty Generator 3.1.3b
+# Ricty Generator
+ricty_version="3.1.3b"
 #
 # Author: Yasunori Yusa <lastname at save dot sys.t.u-tokyo.ac.jp>
 #
@@ -28,20 +29,20 @@
 #    % sh ricty_generator.sh \
 #      Inconsolata.otf migu-1m-regular.ttf migu-1m-bold.ttf
 # 5. Install Ricty
-#    % cp Ricty-{Regular,Bold}.ttf ~/.fonts/
+#    % cp -f Ricty*.ttf ~/.fonts/
 #    % fc-cache -vf
 #
-
-# set version
-ricty_version="3.1.3b"
 
 # set familyname
 ricty_familyname="Ricty"
 ricty_addfamilyname=""
 
-# set ascent and descent
+# set ascent and descent (line width parameters)
 ricty_ascent=815
 ricty_descent=215
+
+# set bold width of ASCII glyphs
+ascii_bold_width=30
 
 # set path to fontforge command
 fontforge_cmd="fontforge"
@@ -59,7 +60,7 @@ modified_migu1m_bold="Modified-migu-1m-bold.sfd"
 ricty_generator="ricty_generator.pe"
 
 ########################################
-# preprocess
+# pre-process
 ########################################
 
 # print information message
@@ -74,7 +75,7 @@ Version 1.1 section 5, it is PROHIBITED to distribute the generated font.
 
 _EOT_
 
-# help
+# display help
 ricty_generator_help()
 {
     echo "Usage: ricty_generator.sh [options] auto"
@@ -90,6 +91,7 @@ ricty_generator_help()
     echo "  -n string              Set additional fontfamily name (\`\`Ricty string'')"
     echo "  -w                     Widen line space"
     echo "  -W                     Widen line space extremely"
+    echo "  -b                     Make bold-face ASCII glyphs more bold"
     echo "  -z                     Disable visible zenkaku space"
     echo "  -a                     Disable fullwidth ambiguous charactors"
     echo "  -s                     Disable scaling down Migu 1M"
@@ -102,7 +104,7 @@ leaving_tmp_flag="false"
 zenkaku_space_flag="true"
 fullwidth_ambiguous_flag="true"
 scaling_down_flag="true"
-while getopts hVf:vln:wWzas OPT
+while getopts hVf:vln:wWbzas OPT
 do
     case $OPT in
         "h" )
@@ -136,6 +138,10 @@ do
             echo "Option: Widen line space extremely"
             ricty_ascent=`expr $ricty_ascent + 256`
             ricty_descent=`expr $ricty_descent + 64`
+            ;;
+        "b" )
+            echo "Option: Make bold-face ASCII glyphs more bold"
+            ascii_bold_width=`expr $ascii_bold_width + 30`
             ;;
         "z" )
             echo "Option: Disable visible zenkaku space"
@@ -176,7 +182,7 @@ then
     fonts_dirs=$tmp
     # search Inconsolata
     input_inconsolata=`find $fonts_dirs -follow -name Inconsolata.otf | head -n 1`
-    if [ ! "$input_inconsolata" ]
+    if [ -z "$input_inconsolata" ]
     then
         echo "Error: Inconsolata.otf not found" >&2
         exit 1
@@ -184,7 +190,7 @@ then
     # search Migu 1M
     input_migu1m_regu=`find $fonts_dirs -follow -iname migu-1m-regular.ttf | head -n 1`
     input_migu1m_bold=`find $fonts_dirs -follow -iname migu-1m-bold.ttf    | head -n 1`
-    if [ ! "$input_migu1m_regu" -o ! "$input_migu1m_bold" ]
+    if [ -z "$input_migu1m_regu" -o -z "$input_migu1m_bold" ]
     then
         echo "Error: migu-1m-regular/bold.ttf not found" >&2
         exit 1
@@ -245,17 +251,17 @@ fi
 cat > ${tmpdir}/${modified_inconsolata_generator} << _EOT_
 #!$fontforge_cmd -script
 
-# print
+# print message
 Print("Generate modified Inconsolata")
 
-# open
+# open Inconsolata
 Print("Open ${input_inconsolata}")
 Open("${input_inconsolata}")
 
-# scale
+# scale to standard glyph size
 ScaleToEm(860, 140)
 
-# remove ambiguous
+# remove ambiguous glyphs
 if ("$fullwidth_ambiguous_flag" == "true")
     Select(0u00a2); Clear() # cent
     Select(0u00a3); Clear() # pound
@@ -285,23 +291,23 @@ if ("$fullwidth_ambiguous_flag" == "true")
     Select(0u2423); Clear() # open box
 endif
 
-# process for merging
+# pre-process for merging
 SelectWorthOutputting()
 ClearInstrs(); UnlinkReference()
 
-# save regular
+# save regular-face
 Save("${tmpdir}/${modified_inconsolata_regu}")
 Print("Generated ${modified_inconsolata_regu}")
 
-# bold-face regular
-Print("While bold-facing Inconsolata, wait a bit, maybe a bit...")
+# make glyphs bold
+Print("While making Inconsolata bold, wait a moment...")
 SelectWorthOutputting()
-ExpandStroke(30, 0, 0, 0, 1)
+ExpandStroke(${ascii_bold_width}, 0, 0, 0, 1)
 Select(0u003e); Copy()           # >
 Select(0u003c); Paste(); HFlip() # <
 RoundToInt(); RemoveOverlap(); RoundToInt()
 
-# save bold
+# save bold-face
 Save("${tmpdir}/${modified_inconsolata_bold}")
 Print("Generated ${modified_inconsolata_bold}")
 Close()
@@ -315,19 +321,19 @@ _EOT_
 cat > ${tmpdir}/${modified_migu1m_generator} << _EOT_
 #!$fontforge_cmd -script
 
-# print
+# print message
 Print("Generate modified Migu 1M")
 
-# parameters
+# set parameters
 input_list  = ["${input_migu1m_regu}",    "${input_migu1m_bold}"]
 output_list = ["${modified_migu1m_regu}", "${modified_migu1m_bold}"]
 
 # regular and bold loop
 i = 0; while (i < SizeOf(input_list))
-    # open
+    # open Migu 1M
     Print("Open " + input_list[i])
     Open(input_list[i])
-    # scale Migu 1M
+    # scale Migu 1M to standard glyph size
     ScaleToEm(860, 140)
     SelectWorthOutputting()
     ClearInstrs(); UnlinkReference()
@@ -337,7 +343,7 @@ i = 0; while (i < SizeOf(input_list))
         Move(23, 0); SetWidth(-23, 1)
     endif
     RoundToInt(); RemoveOverlap(); RoundToInt()
-    # save
+    # save modified Migu 1M
     Save("${tmpdir}/" + output_list[i])
     Print("Generated " + output_list[i])
     Close()
@@ -352,10 +358,10 @@ _EOT_
 cat > ${tmpdir}/${ricty_generator} << _EOT_
 #!$fontforge_cmd -script
 
-# print
+# print message
 Print("Generate Ricty")
 
-# parameters
+# set parameters
 inconsolata_list  = ["${tmpdir}/${modified_inconsolata_regu}", \\
                      "${tmpdir}/${modified_inconsolata_bold}"]
 migu1m_list       = ["${tmpdir}/${modified_migu1m_regu}", \\
@@ -382,11 +388,11 @@ version           = "${ricty_version}"
 
 # regular and bold loop
 i = 0; while (i < SizeOf(fontstyle_list))
-    # new file
+    # open new file
     New()
     # set encoding to Unicode-bmp
     Reencode("unicode")
-    # set configs
+    # set configuration
     if (addfontfamily != "")
         SetFontNames(fontfamily + addfontfamily + "-" + fontstyle_list[i], \\
                      fontfamily + " " + addfontfamily, \\
@@ -450,9 +456,9 @@ i = 0; while (i < SizeOf(fontstyle_list))
     Select(0u2014); PasteInto()
     OverlapIntersect()
     Copy(); Select(0u2015); Paste()
-    # post proccess
+    # post-proccess
     SelectWorthOutputting(); RoundToInt(); RemoveOverlap(); RoundToInt()
-    # generate
+    # generate Ricty
     if (addfontfamily != "")
         Generate(fontfamily + addfontfamily + "-" + fontstyle_list[i] + ".ttf", "", 0x84)
         Print("Generated " + fontfamily + addfontfamily + "-" + fontstyle_list[i] + ".ttf")

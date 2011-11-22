@@ -82,7 +82,7 @@ OpenType file を入手し、インストールしてください。
 
 ## Ricty のインストール
 
-    % cp Ricty-{Regular,Bold}.ttf ~/.fonts/
+    % cp -f Ricty*.ttf ~/.fonts/
     % fc-cache -vf
 
 ## (おまけ) `ricty_generator.sh` のコマンドラインオプション
@@ -102,6 +102,8 @@ fontforge の警告メッセージを表示する。
 行間を広くする。
 ### `-W`
 行間をかなり広くする。
+### `-b`
+ASCII グリフのボールド体をより太くする。
 ### `-z`
 全角スペースを可視化しない。
 ### `-a`
@@ -117,8 +119,7 @@ Ricty の派生フォントです。
 通常、Ricty Discord は Ricty 生成の際に自動的に生成されますが、
 パッチスクリプトを直接実行することによっても生成できます。
 
-    % fontforge -script ricty_discord_patch.pe Ricty-Regular.ttf
-    % fontforge -script ricty_discord_patch.pe Ricty-Bold.ttf
+    % fontforge -script ricty_discord_patch.pe Ricty-Regular.ttf Ricty-Bold.ttf
 
 # 既知の問題
 * Mac OS X を含む一部の環境において、生成スクリプトを実行すると

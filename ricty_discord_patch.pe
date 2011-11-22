@@ -10,8 +10,7 @@
 # the generated font.
 #
 # How to use:
-# % fontforge -script ricty_discord_patch.pe Ricty-Regular.ttf
-# % fontforge -script ricty_discord_patch.pe Ricty-Bold.ttf
+# % fontforge -script ricty_discord_patch.pe Ricty-Regular.ttf Ricty-Bold.ttf
 #
 
 # check args
