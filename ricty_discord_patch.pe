@@ -1,7 +1,7 @@
 #!/usr/local/bin/fontforge -script
 
 #
-# Ricty Discord Patch for Ricty 3.1.3b
+# Ricty Discord Patch for Ricty 3.1.3
 #
 # Author: Yasunori Yusa <lastname at save dot sys.t.u-tokyo.ac.jp>
 #
@@ -10,12 +10,11 @@
 # the generated font.
 #
 # How to use:
-# % fontforge -script ricty_discord_patch.pe Ricty-Regular.ttf Ricty-Bold.ttf
+# % fontforge -script ricty_discord_patch.pe [options] Ricty-Regular.ttf Ricty-Bold.ttf
 #
 
 # check args
 if ($argc == 1)
-    Print("")
     Print("Usage: ricty_discord_patch.pe [options] fontfamily-fontstyle.ttf ...")
     Print("")
     Print("Options:")
@@ -61,7 +60,7 @@ flag_asciitilde="true"
 # begin loop in args
 i = 1
 while (i < $argc)
-if ($argv[i]:t:e != "ttf")
+if ($argv[i]:e != "ttf")
     if ($argv[i] == "-quotedbl" || $argv[i] == "--quotedbl")
         Print("Option: Disable magnified \"")
         flag_quotedbl="false"
@@ -115,30 +114,30 @@ if ($argv[i]:t:e != "ttf")
         flag_asciitilde="false"
     else
         Print("Unknown Option: $argv[i]")
+        Quit()
     endif
 else
 
 ########################################
-# set vars
+# set parameters
 ########################################
 
 # get args
 input_ttf = $argv[i]
 input     = input_ttf:t:r
-if (input_ttf:t:e != "ttf")
-    Print("Usage: ricty_discord_patch.pe fontfamily-fontstyle.ttf ...")
-    Quit()
-endif
 
-# get font names
+# set font names
 hyphen_idx = Strrstr(input, '-')
 if (hyphen_idx == -1)
-    Print("Usage: ricty_discord_patch.pe fontfamily-fontstyle.ttf ...")
+    Print("Usage: ricty_discord_patch.pe [options] fontfamily-fontstyle.ttf ...")
     Quit()
 endif
 inputfamily = Strsub(input, 0, hyphen_idx)
 inputstyle  = Strsub(input, hyphen_idx+1)
 addfamily   = "Discord"
+
+# print message
+Print("Generate " + inputfamily + addfamily + "-" + inputstyle + ".ttf.")
 
 ########################################
 # open file and set configuration
@@ -280,7 +279,6 @@ endif
 ########################################
 
 Generate(inputfamily + addfamily + "-" + inputstyle + ".ttf", "", 0x84)
-Print("Generated " + inputfamily + addfamily + "-" + inputstyle + ".ttf")
 Close()
 
 # end loop

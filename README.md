@@ -24,6 +24,10 @@ Makefile、LaTeX など、UNIX 系のコーディングにおける使用を想�
   特に、OFL 1.1 section 5 に従い、生成されたフォントの再配布は禁止とします。
 
 # バージョン
+## Version 3.1.3 (24 Nov. 2011)
+* Ricty Discord のコマンドラインオプション
+* コマンドラインオプションの追加
+
 ## Version 3.1.2 (3 Oct. 2011)
 * Migu 20111002 に同期 (後方互換を担保せず)
 * コマンドラインオプションの追加
@@ -120,7 +124,7 @@ Ricty の派生フォントです。
 パッチスクリプトを直接実行することによっても生成できます。
 このとき、オプションを指定することで個々の変更点を無効化することができます。
 
-    % fontforge -script ricty_discord_patch.pe Ricty-Regular.ttf Ricty-Bold.ttf
+    % fontforge -script ricty_discord_patch.pe [options] Ricty-Regular.ttf Ricty-Bold.ttf
 
 ## `ricty_discord_patch.pe` のコマンドラインオプション
 ### `-quotedbl`
