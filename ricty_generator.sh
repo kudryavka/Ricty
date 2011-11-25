@@ -2,7 +2,7 @@
 
 #
 # Ricty Generator
-ricty_version="3.1.3"
+ricty_version="3.2.0b"
 #
 # Author: Yasunori Yusa <lastname at save dot sys.t.u-tokyo.ac.jp>
 #
@@ -37,7 +37,7 @@ ricty_familyname="Ricty"
 ricty_addfamilyname=""
 
 # set ascent and descent (line width parameters)
-ricty_ascent=815
+ricty_ascent=835
 ricty_descent=215
 
 # set bold width of ASCII glyphs
