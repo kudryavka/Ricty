@@ -60,7 +60,7 @@ flag_asciitilde="true"
 # begin loop in args
 i = 1
 while (i < $argc)
-if ($argv[i]:e != "ttf")
+if (Strsub($argv[i], 0, 1) == "-")
     if ($argv[i] == "-quotedbl" || $argv[i] == "--quotedbl")
         Print("Option: Disable magnified \"")
         flag_quotedbl="false"
@@ -122,14 +122,13 @@ else
 # set parameters
 ########################################
 
-# get args
-input_ttf = $argv[i]
-input     = input_ttf:t:r
+# get argument
+input = $argv[i]:t:r
 
 # set font names
 hyphen_idx = Strrstr(input, '-')
-if (hyphen_idx == -1)
-    Print("Usage: ricty_discord_patch.pe [options] fontfamily-fontstyle.ttf ...")
+if ($argv[i]:e != "ttf" || hyphen_idx == -1)
+    Print("Illegal Argument: " + $argv[i])
     Quit()
 endif
 inputfamily = Strsub(input, 0, hyphen_idx)
@@ -144,7 +143,7 @@ Print("Generate " + inputfamily + addfamily + "-" + inputstyle + ".ttf.")
 ########################################
 
 # open file
-Open(input_ttf)
+Open($argv[i])
 
 # set encoding to Unicode-bmp
 Reencode("unicode")
