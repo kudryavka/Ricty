@@ -41,6 +41,7 @@ ricty_ascent=835
 ricty_descent=215
 
 # set bold width of ASCII glyphs
+ascii_regular_width=0
 ascii_bold_width=30
 
 # set path to fontforge command
@@ -93,6 +94,7 @@ ricty_generator_help()
     echo "  -w                     Widen line space"
     echo "  -W                     Widen line space extremely"
     echo "  -b                     Make bold-face ASCII glyphs more bold"
+    echo "  -B                     Make regular-/bold-face ASCII glyphs more bold"
     echo "  -z                     Disable visible zenkaku space"
     echo "  -a                     Disable fullwidth ambiguous charactors"
     echo "  -s                     Disable scaling down Migu 1M"
@@ -104,7 +106,7 @@ leaving_tmp_flag="false"
 zenkaku_space_flag="true"
 fullwidth_ambiguous_flag="true"
 scaling_down_flag="true"
-while getopts hVf:vln:wWbzas OPT
+while getopts hVf:vln:wWbBzas OPT
 do
     case $OPT in
         "h" )
@@ -141,6 +143,11 @@ do
             ;;
         "b" )
             echo "Option: Make bold-face ASCII glyphs more bold"
+            ascii_bold_width=`expr $ascii_bold_width + 30`
+            ;;
+        "B" )
+            echo "Option: Make regular-/bold-face ASCII glyphs more bold"
+            ascii_regular_width=`expr $ascii_regular_width + 30`
             ascii_bold_width=`expr $ascii_bold_width + 30`
             ;;
         "z" )
@@ -311,6 +318,20 @@ RoundToInt(); RemoveOverlap(); RoundToInt()
 Print("Save ${modified_inconsolata_bold}.")
 Save("${tmpdir}/${modified_inconsolata_bold}")
 Close()
+
+# open regular-face and make it bold
+if ($ascii_regular_width != 0)
+    Open("${tmpdir}/${modified_inconsolata_regu}")
+    Print("While making regular-face Inconsolata bold, wait a moment...")
+    SelectWorthOutputting()
+    ExpandStroke(${ascii_regular_width}, 0, 0, 0, 1)
+    Select(0u003e); Copy()           # >
+    Select(0u003c); Paste(); HFlip() # <
+    RoundToInt(); RemoveOverlap(); RoundToInt()
+    Save("${tmpdir}/${modified_inconsolata_regu}")
+    Close()
+endif
+
 Quit()
 _EOT_
 
