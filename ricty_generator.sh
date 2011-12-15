@@ -53,6 +53,15 @@ redirection_stderr="/dev/null"
 # set fonts directories used in auto flag
 fonts_dirs=". ${HOME}/.fonts /usr/local/share/fonts /usr/share/fonts ${HOME}/Library/Fonts /Library/Fonts"
 
+# set zenkaku space glyph
+zenkaku_space_glyph=""
+
+# set flags
+leaving_tmp_flag="false"
+zenkaku_space_flag="true"
+fullwidth_ambiguous_flag="true"
+scaling_down_flag="true"
+
 # set filenames
 modified_inconsolata_generator="modified_inconsolata_generator.pe"
 modified_inconsolata_regu="Modified-Inconsolata-Regular.sfd"
@@ -95,6 +104,7 @@ ricty_generator_help()
     echo "  -W                     Widen line space extremely"
     echo "  -b                     Make bold-face ASCII glyphs more bold"
     echo "  -B                     Make regular-/bold-face ASCII glyphs more bold"
+    echo "  -Z unicode             Set visible zenkaku space copied from another glyph"
     echo "  -z                     Disable visible zenkaku space"
     echo "  -a                     Disable fullwidth ambiguous charactors"
     echo "  -s                     Disable scaling down Migu 1M"
@@ -102,11 +112,7 @@ ricty_generator_help()
 }
 
 # get options
-leaving_tmp_flag="false"
-zenkaku_space_flag="true"
-fullwidth_ambiguous_flag="true"
-scaling_down_flag="true"
-while getopts hVf:vln:wWbBzas OPT
+while getopts hVf:vln:wWbBZ:zas OPT
 do
     case $OPT in
         "h" )
@@ -149,6 +155,10 @@ do
             echo "Option: Make regular-/bold-face ASCII glyphs more bold"
             ascii_regular_width=`expr $ascii_regular_width + 30`
             ascii_bold_width=`expr $ascii_bold_width + 30`
+            ;;
+        "Z" )
+            echo "Option: Set visible zenkaku space copied from another glyph: ${OPTARG}"
+            zenkaku_space_glyph="0u${OPTARG}"
             ;;
         "z" )
             echo "Option: Disable visible zenkaku space"
@@ -455,8 +465,12 @@ i = 0; while (i < SizeOf(fontstyle_list))
     MergeFonts(migu1m_list[i])
     # edit zenkaku space (from ballot box and heavy greek cross)
     if ("$zenkaku_space_flag" == "true")
-        Select(0u2610); Copy(); Select(0u3000); Paste()
-        Select(0u271a); Copy(); Select(0u3000); PasteInto(); OverlapIntersect()
+        if ("$zenkaku_space_glyph" == "")
+            Select(0u2610); Copy(); Select(0u3000); Paste()
+            Select(0u271a); Copy(); Select(0u3000); PasteInto(); OverlapIntersect()
+        else
+            Select(${zenkaku_space_glyph}); Copy(); Select(0u3000); Paste()
+        endif
     endif
     # edit zenkaku comma and period
     Select(0uff0c); Scale(150, 150, 100, 0); SetWidth(1000)
