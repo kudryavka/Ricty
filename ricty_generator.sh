@@ -58,7 +58,6 @@ zenkaku_space_glyph=""
 
 # set flags
 leaving_tmp_flag="false"
-zenkaku_space_flag="true"
 fullwidth_ambiguous_flag="true"
 scaling_down_flag="true"
 
@@ -162,7 +161,7 @@ do
             ;;
         "z" )
             echo "Option: Disable visible zenkaku space"
-            zenkaku_space_flag="false"
+            zenkaku_space_glyph="0u3000"
             ;;
         "a" )
             echo "Option: Disable fullwidth ambiguous charactors"
@@ -464,13 +463,11 @@ i = 0; while (i < SizeOf(fontstyle_list))
     MergeFonts(inconsolata_list[i])
     MergeFonts(migu1m_list[i])
     # edit zenkaku space (from ballot box and heavy greek cross)
-    if ("$zenkaku_space_flag" == "true")
-        if ("$zenkaku_space_glyph" == "")
-            Select(0u2610); Copy(); Select(0u3000); Paste()
-            Select(0u271a); Copy(); Select(0u3000); PasteInto(); OverlapIntersect()
-        else
-            Select(${zenkaku_space_glyph}); Copy(); Select(0u3000); Paste()
-        endif
+    if ("$zenkaku_space_glyph" == "")
+        Select(0u2610); Copy(); Select(0u3000); Paste()
+        Select(0u271a); Copy(); Select(0u3000); PasteInto(); OverlapIntersect()
+    else
+        Select(${zenkaku_space_glyph}); Copy(); Select(0u3000); Paste()
     endif
     # edit zenkaku comma and period
     Select(0uff0c); Scale(150, 150, 100, 0); SetWidth(1000)
