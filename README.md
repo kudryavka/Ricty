@@ -209,6 +209,7 @@ Ricty の派生フォントです。
 * Cocoa Emacs でフレーム幅が意図した幅の倍になってしまうときは、
   本末転倒気味ですが、`misc/ricty_ascii_extractor.pe` で
   ASCII 文字のみを分離したフォントを生成する方法が有効です。
+* `misc/ricty_greek_regenerator.pe` でアクセント付きギリシア文字を全角幅にすることができます。
 
 # 作者連絡先
 [遊佐泰紀 (Yasunori Yusa)](http://save.sys.t.u-tokyo.ac.jp/~yusa/index_ja.html)

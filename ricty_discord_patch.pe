@@ -194,7 +194,8 @@ endif
 # 7 -> 7 with cross-bar
 if (flag_7 == "true")
     Select(0u00af); Copy() # macron
-    Select(0u0037); PasteWithOffset(20, -263); RemoveOverlap()
+    Select(0u0037); PasteWithOffset(20, -263)
+    RemoveOverlap(); RoundToInt()
 endif
 
 # : -> magnified :

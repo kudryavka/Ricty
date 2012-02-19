@@ -1,0 +1,163 @@
+#!/usr/local/bin/fontforge -script
+
+#
+# Ricty Greek Re-generator
+#
+# Author: Yasunori Yusa <lastname at save dot sys.t.u-tokyo.ac.jp>
+#
+# This script is for regenerating glyphs of Greek with diacritics. Owing to SIL
+# Open Font License Version 1.1 section 5, it is PROHIBITED to distribute
+# the generated font.
+#
+# How to use:
+# % fontforge -script ricty_greek_regenerator.pe Ricty-Regular.ttf Ricty-Bold.ttf
+#
+
+# check args
+if ($argc == 1)
+    Print("Usage: ricty_greek_regenerator.pe fontfamily-fontstyle.ttf ...")
+    Quit()
+endif
+
+# begin loop in args
+i = 1
+while (i < $argc)
+
+########################################
+# open file and set configuration
+########################################
+
+# open file
+Open($argv[i])
+
+# set encoding to Unicode-bmp
+Reencode("unicode")
+
+########################################
+# edit some glyphs
+########################################
+
+# dialytika
+Select(0u00a8); SetWidth(1000); CenterInWidth()
+
+# tonos
+Select(0u0384); SetWidth(1000); CenterInWidth()
+
+# dialytika tonos
+Select(0u0385); SetWidth(1000); CenterInWidth()
+
+# Alpha with tonos
+Select(0u0391); Copy(); Select(0u0386); Paste()
+Select(0u0384); Copy(); Select(0u0386); PasteWithOffset(-250, 0)
+RemoveOverlap(); RoundToInt()
+
+# ano teleia
+Select(0u0387); SetWidth(1000); CenterInWidth()
+
+# Epsilon with tonos
+Select(0u0395); Copy(); Select(0u0388); Paste()
+Select(0u0384); Copy(); Select(0u0388); PasteWithOffset(-400, 0)
+RemoveOverlap(); RoundToInt()
+
+# Eta with tonos
+Select(0u0397); Copy(); Select(0u0389); Paste()
+Select(0u0384); Copy(); Select(0u0389); PasteWithOffset(-400, 0)
+RemoveOverlap(); RoundToInt()
+
+# Iota with tonos
+Select(0u0399); Copy(); Select(0u038a); Paste()
+Select(0u0384); Copy(); Select(0u038a); PasteWithOffset(-250, 0)
+RemoveOverlap(); RoundToInt()
+
+# Omicron with tonos
+Select(0u039f); Copy(); Select(0u038c); Paste()
+Select(0u0384); Copy(); Select(0u038c); PasteWithOffset(-350, 0)
+RemoveOverlap(); RoundToInt()
+
+# Upsilon with tonos
+Select(0u03a5); Copy(); Select(0u038e); Paste()
+Select(0u0384); Copy(); Select(0u038e); PasteWithOffset(-400, 0)
+RemoveOverlap(); RoundToInt()
+
+# Omega with tonos
+Select(0u03a9); Copy(); Select(0u038f); Paste()
+Select(0u0384); Copy(); Select(0u038f); PasteWithOffset(-350, 0)
+RemoveOverlap(); RoundToInt()
+
+# iota with dialytika and tonos
+Select(0u03b9); Copy(); Select(0u0390); Paste()
+Select(0u0385); Copy(); Select(0u0390); PasteInto()
+RemoveOverlap(); RoundToInt()
+
+# Iota with dialytika
+Select(0u0399); Copy(); Select(0u03aa); Paste()
+Select(0u00a8); Copy(); Select(0u03aa); PasteWithOffset(0, 150)
+RemoveOverlap(); RoundToInt()
+
+# Upsilon with dialytika
+Select(0u03a5); Copy(); Select(0u03ab); Paste()
+Select(0u00a8); Copy(); Select(0u03ab); PasteWithOffset(0, 150)
+RemoveOverlap(); RoundToInt()
+
+# alpha with tonos
+Select(0u03b1); Copy(); Select(0u03ac); Paste()
+Select(0u0384); Copy(); Select(0u03ac); PasteInto()
+RemoveOverlap(); RoundToInt()
+
+# epsilon with tonos
+Select(0u03b5); Copy(); Select(0u03ad); Paste()
+Select(0u0384); Copy(); Select(0u03ad); PasteInto()
+RemoveOverlap(); RoundToInt()
+
+# eta with tonos
+Select(0u03b7); Copy(); Select(0u03ae); Paste()
+Select(0u0384); Copy(); Select(0u03ae); PasteInto()
+RemoveOverlap(); RoundToInt()
+
+# iota with tonos
+Select(0u03b9); Copy(); Select(0u03af); Paste()
+Select(0u0384); Copy(); Select(0u03af); PasteInto()
+RemoveOverlap(); RoundToInt()
+
+# upsilon with dialytika and tonos
+Select(0u03c5); Copy(); Select(0u03b0); Paste()
+Select(0u0385); Copy(); Select(0u03b0); PasteInto()
+RemoveOverlap(); RoundToInt()
+
+# iota with dialytika
+Select(0u03b9); Copy(); Select(0u03ca); Paste()
+Select(0u00a8); Copy(); Select(0u03ca); PasteInto()
+RemoveOverlap(); RoundToInt()
+
+# upsilon with dialytika
+Select(0u03c5); Copy(); Select(0u03cb); Paste()
+Select(0u00a8); Copy(); Select(0u03cb); PasteInto()
+RemoveOverlap(); RoundToInt()
+
+# omicron with tonos
+Select(0u03bf); Copy(); Select(0u03cc); Paste()
+Select(0u0384); Copy(); Select(0u03cc); PasteInto()
+RemoveOverlap(); RoundToInt()
+
+# upsilon with tonos
+Select(0u03c5); Copy(); Select(0u03cd); Paste()
+Select(0u0384); Copy(); Select(0u03cd); PasteInto()
+RemoveOverlap(); RoundToInt()
+
+# omega with tonos
+Select(0u03c9); Copy(); Select(0u03ce); Paste()
+Select(0u0384); Copy(); Select(0u03ce); PasteInto()
+RemoveOverlap(); RoundToInt()
+
+########################################
+# generate
+########################################
+
+Generate($argv[i], "", 0x84)
+Print("Generated " + $argv[i] + ".")
+Close()
+
+# end loop
+i += 1; endloop
+
+Quit()
