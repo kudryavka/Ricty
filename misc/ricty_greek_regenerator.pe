@@ -5,7 +5,8 @@
 #
 # Author: Yasunori Yusa <lastname at save dot sys.t.u-tokyo.ac.jp>
 #
-# This script is for regenerating glyphs of Greek with diacritics. Owing to SIL
+# This script is for regenerating glyphs of Greek with diacritics.
+# The re-generated glyphs are fullwidth. Owing to SIL
 # Open Font License Version 1.1 section 5, it is PROHIBITED to distribute
 # the generated font.
 #
