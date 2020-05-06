@@ -64,7 +64,7 @@ Makefile、LaTeX など、UNIX 系のコーディングにおける使用を想�
 ## Inconsolata のインストール
 ### Debian/Ubuntu
 
-    # apt-get install ttf-inconsolata
+    # apt install fonts-inconsolata
 
 ### その他の Linux
 [Inconsolata 公式サイト](http://levien.com/type/myfonts/inconsolata.html)より
