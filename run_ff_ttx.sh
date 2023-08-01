@@ -6,7 +6,8 @@
 
 
 font_familyname="Cyroit"
-font_familyname_suffix="SP"
+font_familyname_suffix0="SP"
+font_familyname_suffix1="HB"
 build_fonts_dir="build"
 
 forge_ttx_help()
@@ -60,12 +61,14 @@ elif [ $1 = "-F" ]
 then
   echo "Complete Mode (generate finished fonts)"
   rm -f ${font_familyname}*.ttf
-  if [ -z "${font_familyname_suffix}" ]
+  sh font_generator.sh -z -o -e -N "${font_familyname}" auto
+  if [ -n "${font_familyname_suffix0}" ]
   then
-    sh font_generator.sh -z -o -e -N "${font_familyname}" auto
-  else
-    sh font_generator.sh -z -o -e -N "${font_familyname}" auto
-    sh font_generator.sh -o -e -N "${font_familyname}" -n "${font_familyname_suffix}" auto
+    sh font_generator.sh -o -e -N "${font_familyname}" -n "${font_familyname_suffix0}" auto
+  fi
+  if [ -n "${font_familyname_suffix1}" ]
+  then
+    sh font_generator.sh -Z -z -u -o -e -N "${font_familyname}" -n "${font_familyname_suffix1}" auto
   fi
 elif [ $1 = "-h" ]
 then

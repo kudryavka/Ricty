@@ -13,7 +13,7 @@
 font_familyname="Cyroit"
 font_familyname_suffix=""
 
-font_version="1.0.0"
+font_version="1.0.1"
 fontforge_version="20230101"
 vendor_id="PfEd"
 
@@ -87,6 +87,7 @@ ${HOME}/Library/Fonts /Library/Fonts \
 leaving_tmp_flag="false" # 一時ファイル残す
 visible_zenkaku_space_flag="true" # 全角スペース可視化
 visible_hankaku_space_flag="true" # 半角スペース可視化
+underline_flag="true" # アンダーライン付き
 draft_flag="false" # 下書きモード
 oblique_flag="false" # オブリーク作成
 nerd_flag="false" # Nerd fonts 追加
@@ -159,13 +160,14 @@ font_generator_help()
     echo "  -d                     Enable draft mode (skip time-consuming processes)"
     echo "  -Z                     Disable visible zenkaku space"
     echo "  -z                     Disable visible hankaku space"
+    echo "  -u                     Disable zenkaku and hankaku with underline"
     echo "  -o                     Enable generate oblique style"
     echo "  -e                     Enable add Nerd fonts"
     exit 0
 }
 
 # Get options
-while getopts hVf:vlN:n:dZzoe OPT
+while getopts hVf:vlN:n:dZzuoe OPT
 do
     case "${OPT}" in
         "h" )
@@ -205,6 +207,10 @@ do
         "z" )
             echo "Option: Disable visible hankaku space"
             visible_hankaku_space_flag="false"
+            ;;
+        "u" )
+            echo "Option: Disable zenkaku and hankaku with underline"
+            underline_flag="false"
             ;;
         "o" )
             echo "Option: Enable generate oblique style"
@@ -656,7 +662,7 @@ while (i < SizeOf(input_list))
  #    Select(0u023a) # Ⱥ
  #    Select(0u1e00) # Ḁ
 
-# D (クロスバーを付加 (却下))
+# D (クロスバーを付加することで少しくどい感じに)
  #    Select(0u00af); Copy()  # macron
  #    Select(65552);  Paste() # Temporary glyph
  #    Scale(83, 109); Copy()
@@ -679,6 +685,7 @@ while (i < SizeOf(input_list))
  #    Select(0u010e); PasteInto(); SetWidth(500)
  #    Select(0u1e0c); PasteInto(); SetWidth(500)
  #    Select(0u1e0e); PasteInto(); SetWidth(500)
+ #    コメントアウト外すならここまで
  #    Select(0u1e10) # Ḑ
  #    Select(0u1e0a) # Ḋ
  #    Select(0u0110) # Đ
@@ -841,7 +848,7 @@ while (i < SizeOf(input_list))
  #    Select(0ua756) # Ꝗ
  #    Select(0ua758) # Ꝙ
 
-# V (左上にセリフ追加 (却下))
+# V (左上にセリフを追加してYやレと区別しやすく)
  #    # 右上の先端を少し伸ばす
  #    Select(0u2588); Copy() # Full block
  #    Select(65552);  Paste() # Temporary glyph
@@ -873,14 +880,14 @@ while (i < SizeOf(input_list))
  #    RoundToInt()
  #
  #    Select(65552); Clear() # Temporary glyph
-
+ #    コメントアウト外すならここまで
  #    Select(0u0056); Copy() # V
  #    Select(0u01b2) # Ʋ
  #    Select(0u1e7c) # Ṽ
  #    Select(0u1e7e) # Ṿ
  #    Select(0ua75e) # Ꝟ
 
-# Z (クロスバーを付加 (却下))
+# Z (クロスバーを付加してゼェーットな感じに)
  #    Select(0u00af); Copy()  # macron
  #    Select(65552);  Paste() # Temporary glyph
  #    Scale(110, 109); Rotate(-2)
@@ -894,6 +901,7 @@ while (i < SizeOf(input_list))
  #    SetWidth(500)
  #    RemoveOverlap()
  #    Select(65552);  Clear() # Temporary glyph
+ #    コメントアウト外すならここまで
 
 # b (縦線を少し細くする)
     Select(0u2588); Copy() # Full block
@@ -6103,31 +6111,35 @@ while (i < SizeOf(latin_sfd_list))
     CorrectDirection()
     SetWidth(500)
 
-# 全角形加工 (半角を全角形にコピーし、下線を追加)
+# 全角形加工 (半角英数記号を全角形にコピーし、下線を追加)
     Print("Copy hankaku to zenkaku and edit")
 
-    # 下線作成
-    Select(0u25a0); Copy() # Black square
-    Select(65552);  Paste()
-    Scale(91, 92)
-    Select(0u25a1); Copy() # White square
-    Select(65552);  PasteInto()
-    OverlapIntersect()
+    Select(65552); Clear() # Temporary glyph
+    Select(65553); Clear() # Temporary glyph
+    if ("${underline_flag}" == "true")
+        # 下線作成
+        Select(0u25a0); Copy() # Black square
+        Select(65552);  Paste()
+        Scale(91, 92)
+        Select(0u25a1); Copy() # White square
+        Select(65552);  PasteInto()
+        OverlapIntersect()
+    
+        Select(0u25a0); Copy() # Black square
+        Select(65552); PasteWithOffset(0, -510)
+        Scale(120, 100)
+        OverlapIntersect()
+        Move(22, ${y_pos_space})
+        SetWidth(1000)
+    
+        # 縦線作成
+        Copy()
+        Select(65553); Paste()
+        Rotate(-90, 490, 340)
+        SetWidth(1000)
+    endif
 
-    Select(0u25a0); Copy() # Black square
-    Select(65552); PasteWithOffset(0, -510)
-    Scale(120, 100)
-    OverlapIntersect()
-    Move(22, ${y_pos_space})
-    SetWidth(1000)
-
-    # 縦線作成
-    Copy()
-    Select(65553); Paste()
-    Rotate(-90, 490, 340)
-    SetWidth(1000)
-
-    # グリフコピー、加工
+    # 半角英数記号を全角形にコピー、加工
     # ! - }
     j = 0
     while (j < 93)
@@ -6199,7 +6211,7 @@ while (i < SizeOf(latin_sfd_list))
     Select(0u003F); Copy() # ?
     Select(0u2049); PasteWithOffset(460, 0) # ⁉
 
-# 縦書き用句読点
+# 縦書き形句読点
     hori = [0uff0c, 0u3001, 0u3002] # ，、。
     vert = 65040 # 0ufe10
     j = 0
@@ -6211,13 +6223,13 @@ while (i < SizeOf(latin_sfd_list))
         j += 1
     endloop
 
-# 縦書き用アンダーライン
+# CJK互換形アンダーライン
     Select(0uff3f); Copy() # ＿
     Select(0ufe33); Paste() # ︳
     Rotate(-90, 490, 340)
     SetWidth(1000)
 
-# 縦書き用括弧
+# CJK互換形括弧
     hori = [0u3016, 0u3017] # 〖〗
     vert = 65047 # 0ufe17
     j = 0
@@ -6326,7 +6338,7 @@ while (i < SizeOf(latin_sfd_list))
     Rotate(-90, 490, 340)
     SetWidth(1000)
 
-# 横書き全角文字に下線追加
+# 横書き全角形に下線追加
     j = 0 # ！ - ｠
     while (j < 96)
         Select(65552); Copy()
@@ -6372,19 +6384,23 @@ while (i < SizeOf(latin_sfd_list))
 
 # 半角文字に下線を追加
     Print("Edit hankaku")
-    # 下線
-    Select(0u25a0); Copy() # Black square
-    Select(65552);  Paste() # Temporary glyph
-    Scale(100, 92)
-    Select(0u25a1); Copy() # White square
-    Select(65552);  PasteInto()
-    OverlapIntersect()
-    Scale(34, 100); Move(-228, 0)
 
-    Select(0u25a0); Copy() # Black square
-    Select(65552); PasteWithOffset(-150, -510)
-    Move(0, ${y_pos_space})
-    OverlapIntersect()
+    Select(65552); Clear() # Temporary glyph
+    if ("${underline_flag}" == "true")
+        # 下線作成
+        Select(0u25a0); Copy() # Black square
+        Select(65552);  Paste() # Temporary glyph
+        Scale(100, 92)
+        Select(0u25a1); Copy() # White square
+        Select(65552);  PasteInto()
+        OverlapIntersect()
+        Scale(34, 100); Move(-228, 0)
+    
+        Select(0u25a0); Copy() # Black square
+        Select(65552); PasteWithOffset(-150, -510)
+        Move(0, ${y_pos_space})
+        OverlapIntersect()
+    endif
 
     j = 0
     while (j < 63)
