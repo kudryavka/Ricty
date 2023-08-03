@@ -13,7 +13,7 @@
 font_familyname="Cyroit"
 font_familyname_suffix=""
 
-font_version="1.0.1"
+font_version="1.0.2"
 fontforge_version="20230101"
 vendor_id="PfEd"
 
@@ -54,12 +54,12 @@ hhea_linegap1024="0"
 y_pos_em_revice="-10" #Y座標移動量
 
 # Powerline 変形、移動用
-height_percent_pl="123" # PowelineY座標拡大率
-height_percent_block="89" # ボックス要素Y座標拡大率
-height_center_pl="297" # Powerline拡大時Y座標中心
+height_percent_pl="123" # PowelineY座標比率
+height_percent_block="89" # ボックス要素Y座標比率
+height_center_pl="297" # PowerlineリサイズY座標中心
 y_pos_pl="72" # PowerlineY座標移動量
 
-# 可視化したスペース等の下線のY座標移動量
+# 可視化したスペース等、下線のY座標移動量
 y_pos_space="-235"
 
 # ウェイト調整用
@@ -69,8 +69,14 @@ weight_reduce_kana="-8" # 主にカナフォント
 weight_reduce="-12" # その他
 
 # 英数文字の縦横拡大率
-height_percent_latin="102" # 縦
-width_percent_latin="98" # 横
+height_percent_latin="102" # 縦比率
+width_percent_latin="98" # 横比率
+
+# 上付き、下付き数字用
+percent_super_sub="65" # 比率
+y_pos_super="255" # 上付きY座標移動量
+y_pos_sub="-20" # 下付きY座標移動量
+weight_extend_super_sub="16" # ウェイト調整
 
 # Set path to fontforge command
 fontforge_command="fontforge"
@@ -1633,11 +1639,104 @@ while (i < SizeOf(input_list))
     SetWidth(500)
     OverlapIntersect()
 
+# 上付き、下付き数字を置き換え
+    Select(0u0031); Copy() # 1
+    Select(0u00b9); Paste() # ¹
+    Scale(${percent_super_sub}, 250, 0)
+    ChangeWeight(${weight_extend_super_sub})
+    CorrectDirection()
+    Move(0,${y_pos_super})
+    SetWidth(500)
+
+    Select(0u0032); Copy() # 2
+    Select(0u00b2); Paste() # ²
+    Scale(${percent_super_sub}, 250, 0)
+    ChangeWeight(${weight_extend_super_sub})
+    CorrectDirection()
+    Move(0,${y_pos_super})
+    SetWidth(500)
+
+    Select(0u0033); Copy() # 3
+    Select(0u00b3); Paste() # ³
+    Scale(${percent_super_sub}, 250, 0)
+    ChangeWeight(${weight_extend_super_sub})
+    CorrectDirection()
+    Move(0,${y_pos_super})
+    SetWidth(500)
+
+    Select(0u0069); Copy() # i
+    Select(0u2071); Paste() # ⁱ
+    Scale(${percent_super_sub}, 250, 0)
+    ChangeWeight(${weight_extend_super_sub})
+    CorrectDirection()
+    Move(0,${y_pos_super})
+    SetWidth(500)
+
+    # ⁰, ⁴-⁹
+    j = 0
+    while (j < 10)
+        if (j < 1 || 3 < j) 
+            Select(0u0030 + j); Copy()
+            Select(0u2070 + j); Paste()
+            Scale(${percent_super_sub}, 250, 0)
+            ChangeWeight(${weight_extend_super_sub})
+            CorrectDirection()
+            Move(0,${y_pos_super})
+            SetWidth(500)
+        endif
+        j += 1
+    endloop
+
+    # ⁺-ⁿ
+    norm = [0u002b, 0u2212, 0u003d, 0u0028, 0u0029, 0u006e]
+    j = 0
+    while (j < SizeOf(norm))
+        Select(norm[j]); Copy()
+        Select(0u207a + j); Paste()
+        Scale(${percent_super_sub}, 250, 0)
+        ChangeWeight(${weight_extend_super_sub})
+        CorrectDirection()
+        Move(0,${y_pos_super})
+        SetWidth(500)
+        j += 1
+    endloop
+
+    # ₀-₉
+    j = 0
+    while (j < 10)
+        Select(0u0030 + j); Copy()
+        Select(0u2080 + j); Paste()
+        Scale(${percent_super_sub}, 250, 0)
+        ChangeWeight(${weight_extend_super_sub})
+        CorrectDirection()
+        Move(0,${y_pos_sub})
+        SetWidth(500)
+        j += 1
+    endloop
+
+    # ₊-ₜ
+    norm = [0u002b, 0u2212, 0u003d, 0u0028, 0u0029, 0u0000,\
+            0u0061, 0u0065, 0u006f, 0u0078, 0u0259,\
+            0u0068, 0u006b, 0u006c, 0u006d,\
+            0u006e, 0u0070, 0u0073, 0u0074] # 0u0000はダミー
+    j = 0
+    while (j < SizeOf(norm))
+        if (j != 5)
+            Select(norm[j]); Copy()
+            Select(0u208a + j); Paste()
+            Scale(${percent_super_sub}, 250, 0)
+            ChangeWeight(${weight_extend_super_sub})
+            CorrectDirection()
+            Move(0,${y_pos_sub})
+            SetWidth(500)
+        endif
+        j += 1
+    endloop
+
 # --------------------------------------------------
 
 # 記号を一部クリア
     Print("Remove some glyphs")
-    Select(0u207b); Clear() # Superscript minus
     Select(0u2190, 0u21ff); Clear() # 矢印
     Select(0u2190, 0u21ff); Clear() # 矢印
  #    Select(0u2500, 0u256c); Clear() # 罫線
@@ -1738,7 +1837,7 @@ while (i < SizeOf(input_list))
     Select(0u203b); Clear() # ※
  #    Select(0u203e); Clear() # ‾
  #    Select(0u2074); Clear() # ⁴
-    Select(0u207f); Clear() # ⁿ
+ #    Select(0u207f); Clear() # ⁿ
  #    Select(0u2081, 0u2084); Clear() # ₁₂₃₄
  #    Select(0u20ac); Clear() # €
     Select(0u2103); Clear() # ℃
@@ -6129,7 +6228,7 @@ while (i < SizeOf(latin_sfd_list))
         Select(65552); PasteWithOffset(0, -510)
         Scale(120, 100)
         OverlapIntersect()
-        Move(22, ${y_pos_space})
+        Move(0, ${y_pos_space})
         SetWidth(1000)
     
         # 縦線作成
@@ -6160,7 +6259,6 @@ while (i < SizeOf(latin_sfd_list))
 
     # 〜
     Select(0uff5e); Rotate(10) # ～
-    Move(22, 0)
 
     # ￠ - ￦
     Select(0u00a2);  Copy() # ¢
@@ -6188,28 +6286,28 @@ while (i < SizeOf(latin_sfd_list))
     # ‼
     Select(0u0021); Copy() # !
     Select(0u203c); Paste() # ‼
-    Move(40, 0)
-    Select(0u203c); PasteWithOffset(460, 0) # ‼
+    Move(30, 0)
+    Select(0u203c); PasteWithOffset(450, 0) # ‼
 
     # ⁇
     Select(0u003F); Copy() # ?
     Select(0u2047); Paste() # ⁇
-    Move(40, 0)
-    Select(0u2047); PasteWithOffset(460, 0) # ⁇
+    Move(10, 0)
+    Select(0u2047); PasteWithOffset(430, 0) # ⁇
 
     # ⁈
     Select(0u003F); Copy() # ?
     Select(0u2048); Paste() # ⁈
-    Move(40, 0)
+    Move(10, 0)
     Select(0u0021); Copy() # !
-    Select(0u2048); PasteWithOffset(460, 0) # ⁈
+    Select(0u2048); PasteWithOffset(450, 0) # ⁈
 
     # ⁉
     Select(0u0021); Copy() # !
     Select(0u2049); Paste() # ⁉
-    Move(40, 0)
+    Move(30, 0)
     Select(0u003F); Copy() # ?
-    Select(0u2049); PasteWithOffset(460, 0) # ⁉
+    Select(0u2049); PasteWithOffset(430, 0) # ⁉
 
 # 縦書き形句読点
     hori = [0uff0c, 0u3001, 0u3002] # ，、。

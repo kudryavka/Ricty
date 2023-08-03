@@ -30,34 +30,34 @@ then
   echo "Normal Mode"
   rm -f ${font_familyname}*.ttf
   sh font_generator.sh -N "${font_familyname}" auto
-elif [ $1 = "-d" ]
+elif [ "$1" = "-d" ]
 then
   echo "Draft Mode"
   rm -f ${font_familyname}*.ttf
   sh font_generator.sh -l -d -N "${font_familyname}" auto
   exit 0 # 下書きモードの場合テーブルを編集しない
-elif [ $1 = "-de" ]
+elif [ "$1" = "-de" ]
 then
   echo "Draft Mode (add Nerd fonts)"
   rm -f ${font_familyname}*.ttf
   sh font_generator.sh -l -d -e -N "${font_familyname}" auto
   exit 0 # 下書きモードの場合テーブルを編集しない
-elif [ $1 = "-e" ]
+elif [ "$1" = "-e" ]
 then
   echo "Normal Mode (add Nerd fonts)"
   rm -f ${font_familyname}*.ttf
   sh font_generator.sh -e -N "${font_familyname}" auto
-elif [ $1 = "-o" ]
+elif [ "$1" = "-o" ]
 then
   echo "Normal Mode (also generate obliqe style)"
   rm -f ${font_familyname}*.ttf
   sh font_generator.sh -o -N "${font_familyname}" auto
-elif [ $1 = "-eo" ]
+elif [ "$1" = "-eo" ]
 then
   echo "Normal Mode (also generate oblique style, Add Nerd fonts)"
   rm -f ${font_familyname}*.ttf
   sh font_generator.sh -e -o -N "${font_familyname}" auto
-elif [ $1 = "-F" ]
+elif [ "$1" = "-F" ]
 then
   echo "Complete Mode (generate finished fonts)"
   rm -f ${font_familyname}*.ttf
@@ -70,7 +70,7 @@ then
   then
     sh font_generator.sh -Z -z -u -o -e -N "${font_familyname}" -n "${font_familyname_suffix1}" auto
   fi
-elif [ $1 = "-h" ]
+elif [ "$1" = "-h" ]
 then
   forge_ttx_help
   exit 0
@@ -80,7 +80,7 @@ else
 fi
 
 # cmap テーブル加工用ファイルの作成
-if [ $1 = "-F" ]
+if [ "$1" = "-F" ]
 then
   sh uvs_table_maker.sh -N "${font_familyname}"
 else
@@ -91,7 +91,7 @@ then
  exit 1
 fi
 # テーブル加工
-if [ $1 = "-F" ]
+if [ "$1" = "-F" ]
 then
   sh table_modificator.sh -N "${font_familyname}"
 else
@@ -102,7 +102,7 @@ then
  exit 1
 fi
 # 完成したフォントの移動
-if [ $1 = "-F" ]
+if [ "$1" = "-F" ]
 then
   echo "Move finished fonts"
   mkdir -p "${build_fonts_dir}"
