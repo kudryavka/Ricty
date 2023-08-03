@@ -6,6 +6,9 @@ Cyroit (しろいと) はRicty生成スクリプトで遊んでいるうちに�
 フォントサンプル ( [CotEditor](https://coteditor.com) にて)
 ![ScreenShop](/images/SS.png)
 
+## ダウンロード
+[最新版](https://github.com/omonomo/Cyroit/releases/download/v1.0.2/Cyroit_v1.0.2.zip)
+
 ## その他の特徴
 - 主にラテン文字のグリフは [Inconsolata](https://github.com/googlefonts/Inconsolata) を使用しています。
 - 主に仮名文字、ギリシア文字、キリル文字のグリフは [CircleM+ 1m](https://mix-mplus-ipa.osdn.jp) を使用しています。
