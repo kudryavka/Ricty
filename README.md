@@ -7,7 +7,9 @@ Cyroit (しろいと) はRicty生成スクリプトで遊んでいるうちに�
 ![ScreenShop](/images/SS.png)
 
 ## ダウンロード
-[最新版](https://github.com/omonomo/Cyroit/releases/download/v1.0.2/Cyroit_v1.0.2.zip)
+最新版 (v1.0.2)
+- [フォント](https://github.com/omonomo/Cyroit/releases/download/v1.0.2/Cyroit_v1.0.2.zip)
+- [ソースコード](https://github.com/omonomo/Cyroit/archive/refs/tags/v1.0.2.zip)
 
 ## その他の特徴
 - 主にラテン文字のグリフは [Inconsolata](https://github.com/googlefonts/Inconsolata) を使用しています。
@@ -93,3 +95,7 @@ Powerlineグリフを使用する際はフォントサイズを12ptか14ptにす
 
 ## 謝辞
 Cyroitの合成にあたり、素晴らしいフォントとツール類を提供してくださっております製作者の方々に感謝いたします。
+
+## リンク
+- [GitHubページ](https://github.com/omonomo/Cyroit): 過去のバージョンや更新履歴はこちらをご参照ください。
+- [指の移動量が少ない日本語かな入力配列 「水草配列」](https://omonomo.github.io/Mizukusa/): 私が実際に使用している、オリジナル日本語かな入力配列を紹介しています。
