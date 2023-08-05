@@ -7,9 +7,9 @@ Cyroit (しろいと) はRicty生成スクリプトで遊んでいるうちに�
 ![ScreenShop](/images/SS.png)
 
 ## ダウンロード
-最新版 (v1.0.2)
-- [フォント](https://github.com/omonomo/Cyroit/releases/download/v1.0.2/Cyroit_v1.0.2.zip)
-- [ソースコード](https://github.com/omonomo/Cyroit/archive/refs/tags/v1.0.2.zip)
+最新版 (v1.0.3)
+- [フォント](https://github.com/omonomo/Cyroit/releases/download/v1.0.3/Cyroit_v1.0.3.zip)
+- [ソースコード](https://github.com/omonomo/Cyroit/archive/refs/tags/v1.0.3.zip)
 
 ## その他の特徴
 - 主にラテン文字のグリフは [Inconsolata](https://github.com/googlefonts/Inconsolata) を使用しています。
@@ -29,7 +29,7 @@ Cyroit (しろいと) はRicty生成スクリプトで遊んでいるうちに�
 - 一部のひらがなを教科書体っぽく (跳ねたり突き抜けたり) しています。
 - 濁点、半濁点の大きさや位置を変えています。
 - イコールと区別しやすいようにダブルハイフンの先端を少し折っています。
-- その他のグリフについても一部微調整を施してあるものがあります。
+- その他のグリフについても一部微調整を施しています。
 
 ### 漢字について
 - カタカナや図形の○などと区別しやすいように一部の漢字にウロコを追加しています。
@@ -90,6 +90,7 @@ Cyroitは、以下の環境でビルドできることを確認しています�
 また`-F`オプション以外の時は、フォント名はCyroitですがSP版のみ生成します。
 
 ## メモ
+一部グリフが不統一なところがありますが、複数のフォントを合成しているためであり、仕様となります。
 Powerlineグリフを使用する際はフォントサイズを12ptか14ptにすると、よい感じに表示されるかもしれません。  
 完成品の生成については、バージョン違いの差異分をパッチにすればもっと高速化できるはずですが、作る気力を失っております。
 
@@ -98,4 +99,4 @@ Cyroitの合成にあたり、素晴らしいフォントとツール類を提�
 
 ## リンク
 - [GitHubページ](https://github.com/omonomo/Cyroit): 過去のバージョンや更新履歴はこちらをご参照ください。
-- [指の移動量が少ない日本語かな入力配列 「水草配列」](https://omonomo.github.io/Mizukusa/): 私が実際に使用している、オリジナル日本語かな入力配列を紹介しています。
+- [小指の移動量が少ない日本語かな入力配列 「水草配列」](https://omonomo.github.io/Mizukusa/): 私が実際に使用している、オリジナル日本語かな入力配列を紹介しています。
