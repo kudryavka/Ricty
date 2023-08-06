@@ -5534,6 +5534,7 @@ while (i < SizeOf(input_list))
     else
         ChangeWeight(-12)
     endif
+    CorrectDirection()
     Move(240, 224)
     SetWidth(1024)
     Select(65552); Clear() # Temporary glyph
