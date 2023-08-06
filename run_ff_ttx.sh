@@ -68,7 +68,7 @@ then
   fi
   if [ -n "${font_familyname_suffix1}" ]
   then
-    sh font_generator.sh -Z -z -u -o -e -N "${font_familyname}" -n "${font_familyname_suffix1}" auto
+    sh font_generator.sh -Z -z -u -b -o -e -N "${font_familyname}" -n "${font_familyname_suffix1}" auto
   fi
 elif [ "$1" = "-h" ]
 then
