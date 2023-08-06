@@ -97,6 +97,7 @@ leaving_tmp_flag="false" # 一時ファイル残す
 visible_zenkaku_space_flag="true" # 全角スペース可視化
 visible_hankaku_space_flag="true" # 半角スペース可視化
 underline_flag="true" # アンダーライン付き
+broken_line_flag="true" # ダッシュ破線化
 draft_flag="false" # 下書きモード
 oblique_flag="false" # オブリーク作成
 nerd_flag="false" # Nerd fonts 追加
@@ -170,13 +171,14 @@ font_generator_help()
     echo "  -Z                     Disable visible zenkaku space"
     echo "  -z                     Disable visible hankaku space"
     echo "  -u                     Disable zenkaku and hankaku with underline"
+    echo "  -b                     Disable broken dash and vertical line"
     echo "  -o                     Enable generate oblique style"
     echo "  -e                     Enable add Nerd fonts"
     exit 0
 }
 
 # Get options
-while getopts hVf:vlN:n:dZzuoe OPT
+while getopts hVf:vlN:n:dZzuboe OPT
 do
     case "${OPT}" in
         "h" )
@@ -220,6 +222,10 @@ do
         "u" )
             echo "Option: Disable zenkaku and hankaku with underline"
             underline_flag="false"
+            ;;
+        "b" )
+            echo "Option: Disable broken dash and vertical line"
+            broken_line_flag="false"
             ;;
         "o" )
             echo "Option: Enable generate oblique style"
@@ -1387,14 +1393,16 @@ while (i < SizeOf(input_list))
     SetWidth(1000)
 
 # ⁄ (/と区別するため分割)
-    Select(0u2044); Copy() # ⁄
-    Select(65552);  Paste() # Temporary glyph
-    Scale(120); Copy()
-    Select(0u2044) # ⁄
-    PasteWithOffset(200, 435); PasteWithOffset(-200, -435)
-    OverlapIntersect()
-    SetWidth(500)
-    Select(65552); Clear() # Temporary glyph
+    if ("${broken_line_flag}" == "true")
+        Select(0u2044); Copy() # ⁄
+        Select(65552);  Paste() # Temporary glyph
+        Scale(120); Copy()
+        Select(0u2044) # ⁄
+        PasteWithOffset(200, 435); PasteWithOffset(-200, -435)
+        OverlapIntersect()
+        SetWidth(500)
+        Select(65552); Clear() # Temporary glyph
+    endif
 
 # ⁑ (漢字フォントを置換)
     Select(0u002a); Copy() # *
@@ -1627,8 +1635,13 @@ while (i < SizeOf(input_list))
     Rotate(90, 490, 340)
     Select(65552); Clear() # Temporary glyph
 
-# | (縦に伸ばして少し上へ移動) ※ ⌀⎈ の加工より後にすること
-    Select(0u00a6); Copy() # ¦
+# | (破線にし、縦に伸ばして少し上へ移動) ※ ⌀⎈ の加工より後にすること
+    if ("${broken_line_flag}" == "true")
+        Select(0u00a6) # ¦
+    else
+        Select(0u007c) # |
+    endif
+    Copy()
     Select(0u007c); Paste() # |
     Move(0, 85)
     PasteWithOffset(0, 55)
@@ -4488,19 +4501,25 @@ while (i < SizeOf(input_list))
 # enダッシュ、emダッシュ加工
     Print("Edit en and em dashes")
 # –
-    Select(0u2013); Copy() # –
-    PasteWithOffset(200, 0); PasteWithOffset(-200, 0)
-    OverlapIntersect()
+    Select(0u2013) # –
+    if ("${broken_line_flag}" == "true")
+        Copy()
+        PasteWithOffset(200, 0); PasteWithOffset(-200, 0)
+        OverlapIntersect()
+    endif
     Move(0, 58)
     SetWidth(500)
 
 # —
-    Select(0u2014); Copy() # —
-    PasteWithOffset(323, 0); PasteWithOffset(-647, 0)
-    OverlapIntersect(); Copy()
-    Rotate(180)
-    PasteInto()
-    OverlapIntersect()
+    Select(0u2014) # —
+    if ("${broken_line_flag}" == "true")
+        Copy()
+        PasteWithOffset(323, 0); PasteWithOffset(-647, 0)
+        OverlapIntersect(); Copy()
+        Rotate(180)
+        PasteInto()
+        OverlapIntersect()
+    endif
     Move(0, 45)
     SetWidth(1000)
 
@@ -4738,9 +4757,9 @@ while (i < SizeOf(input_list))
             SelectMore(0u2c71) # ⱱ
             SelectMore(0ufb00, 0ufb04) # ﬀ
 
-            Select(0u20a0, 0u212d) # 記号類
+            SelectMore(0u20a0, 0u212d) # 記号類
  #            SelectMore(0u212e) # ℮
-            Select(0u212f, 0u214f) # 記号類
+            SelectMore(0u212f, 0u214f) # 記号類
              SelectMore(0u2150, 0u21cf) # ローマ数字、矢印
              SelectMore(0u21e4, 0u21e5) # ⇤⇥
             SelectMore(0u21ee, 0u22ed) # 記号類
@@ -4793,7 +4812,7 @@ while (i < SizeOf(input_list))
 
             Select(0u20a0, 0u212d) # 記号類
  #            SelectMore(0u212e) # ℮
-            Select(0u212f, 0u214f) # 記号類
+            SelectMore(0u212f, 0u214f) # 記号類
             SelectMore(0u2150, 0u21cf) # ローマ数字、矢印
             SelectMore(0u21e4, 0u21e5) # ⇤⇥
             SelectMore(0u21ee, 0u22ed) # 記号類
